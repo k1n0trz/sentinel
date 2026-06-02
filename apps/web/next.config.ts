@@ -10,6 +10,7 @@ const legacyHtmlPages = [
   ['recursos', '/recursos'],
   ['contacto', '/contacto'],
   ['login', '/login'],
+  ['app', '/app'],
 ] as const;
 
 const nextConfig: NextConfig = {

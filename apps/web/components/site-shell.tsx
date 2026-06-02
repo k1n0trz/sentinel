@@ -42,7 +42,7 @@ export function SiteHeader() {
             ))}
           </nav>
           <div className="header-actions">
-            <a className="link-login" href="/login">
+            <a className="link-login" href="/app">
               Iniciar sesión
             </a>
             <a className="btn btn-primary btn-sm" href="/diagnostico">
@@ -65,7 +65,7 @@ export function SiteHeader() {
             {label}
           </a>
         ))}
-        <a href="/login" onClick={() => setMenuOpen(false)}>
+        <a href="/app" onClick={() => setMenuOpen(false)}>
           Iniciar sesión
         </a>
         <a className="btn btn-primary" href="/diagnostico" onClick={() => setMenuOpen(false)}>

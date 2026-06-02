@@ -150,7 +150,7 @@ export function SentinelHome() {
             ))}
           </nav>
           <div className="header-actions">
-            <a className="link-login" href="/login">
+            <a className="link-login" href="/app">
               Iniciar sesión
             </a>
             <a className="btn btn-primary btn-sm" href={demoHref}>
