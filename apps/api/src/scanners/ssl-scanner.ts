@@ -1,4 +1,5 @@
 import tls from 'node:tls';
+import { isIP } from 'node:net';
 import type { Finding, SslResult } from '@sentinel/shared';
 import { nanoid } from 'nanoid';
 
@@ -24,7 +25,7 @@ export const scanSsl = async (url: URL): Promise<{ ssl: SslResult; findings: Fin
       {
         host: url.hostname,
         port: Number(url.port || 443),
-        servername: url.hostname,
+        servername: isIP(url.hostname) ? undefined : url.hostname,
         rejectUnauthorized: false,
         timeout: 6000,
       },
@@ -110,4 +111,3 @@ export const scanSsl = async (url: URL): Promise<{ ssl: SslResult; findings: Fin
     });
   });
 };
-

@@ -12,8 +12,24 @@ export type ScanStatus = z.infer<typeof scanStatusSchema>;
 export const scanGradeSchema = z.enum(['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'R']);
 export type ScanGrade = z.infer<typeof scanGradeSchema>;
 
+const allowedScanProtocols = new Set(['http:', 'https:']);
+
+const hasExplicitProtocol = (value: string) => /^[a-z][a-z\d+.-]*:\/\//i.test(value);
+
+const isSupportedScanTarget = (value: string) => {
+  try {
+    const parsed = new URL(hasExplicitProtocol(value) ? value : `https://${value}`);
+
+    return allowedScanProtocols.has(parsed.protocol) && parsed.hostname.length > 0;
+  } catch {
+    return false;
+  }
+};
+
 export const freeScanRequestSchema = z.object({
-  url: z.string().url().max(2048),
+  url: z.string().trim().min(1).max(2048).refine(isSupportedScanTarget, {
+    message: 'Enter a valid domain or HTTP/HTTPS URL.',
+  }),
   followRedirects: z.boolean().default(true),
   hideFromPublicResults: z.boolean().default(false),
 });

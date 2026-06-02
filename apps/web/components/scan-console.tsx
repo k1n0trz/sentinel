@@ -8,7 +8,7 @@ import { runFreeScan } from '../lib/api';
 const severityOrder = ['critical', 'high', 'medium', 'low', 'info'] as const;
 
 export function ScanConsole() {
-  const [url, setUrl] = useState('https://example.com');
+  const [url, setUrl] = useState('example.com');
   const [scan, setScan] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,8 +72,9 @@ export function ScanConsole() {
                 value={url}
                 onChange={(event) => setUrl(event.target.value)}
                 className="h-12 border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition focus:border-electric"
-                placeholder="https://example.com"
-                type="url"
+                inputMode="url"
+                placeholder="example.com"
+                type="text"
                 required
               />
               <button

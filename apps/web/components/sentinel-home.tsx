@@ -114,7 +114,7 @@ const severityOrder = ['critical', 'high', 'medium', 'low', 'info'] as const;
 
 export function SentinelHome() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [url, setUrl] = useState('https://example.com');
+  const [url, setUrl] = useState('example.com');
   const [followRedirects, setFollowRedirects] = useState(true);
   const [hideFromPublicResults, setHideFromPublicResults] = useState(false);
   const [scan, setScan] = useState<ScanResult | null>(null);
@@ -240,9 +240,10 @@ export function SentinelHome() {
                 <input
                   id="scan-url"
                   onChange={(event) => setUrl(event.target.value)}
-                  placeholder="https://example.com"
+                  inputMode="url"
+                  placeholder="example.com"
                   required
-                  type="url"
+                  type="text"
                   value={url}
                 />
                 <button className="btn btn-primary" disabled={isScanning} type="submit">

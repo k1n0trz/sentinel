@@ -3,7 +3,35 @@ import { isIP } from 'node:net';
 import type { DnsResult, Finding } from '@sentinel/shared';
 import { nanoid } from 'nanoid';
 
+const dnsLookupTimeoutMs = 5000;
+
+const withDnsTimeout = async <T>(lookup: Promise<T>): Promise<T> => {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeout = setTimeout(() => reject(new Error('DNS lookup timed out.')), dnsLookupTimeoutMs);
+  });
+
+  try {
+    return await Promise.race([lookup, timeoutPromise]);
+  } finally {
+    clearTimeout(timeout!);
+  }
+};
+
 export const scanDns = async (hostname: string) => {
+  if (hostname.toLowerCase() === 'localhost') {
+    return {
+      dns: {
+        hostname,
+        addresses: ['127.0.0.1'],
+        mx: [],
+        ns: [],
+      },
+      findings: [],
+    };
+  }
+
   if (isIP(hostname)) {
     return {
       dns: {
@@ -17,9 +45,9 @@ export const scanDns = async (hostname: string) => {
   }
 
   const [addresses, mxRecords, nsRecords] = await Promise.allSettled([
-    resolve4(hostname),
-    resolveMx(hostname),
-    resolveNs(hostname),
+    withDnsTimeout(resolve4(hostname)),
+    withDnsTimeout(resolveMx(hostname)),
+    withDnsTimeout(resolveNs(hostname)),
   ]);
 
   const dns: DnsResult = {
