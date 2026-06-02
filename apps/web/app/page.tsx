@@ -1,6 +1,5 @@
-import { ScanConsole } from '../components/scan-console';
+import { SentinelHome } from '../components/sentinel-home';
 
 export default function Page() {
-  return <ScanConsole />;
+  return <SentinelHome />;
 }
-

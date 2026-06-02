@@ -3,7 +3,7 @@ import { scanResultSchema, type FreeScanRequest, type ScanResult } from '@sentin
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4100';
 
 export const runFreeScan = async (payload: FreeScanRequest): Promise<ScanResult> => {
-  const response = await fetch(`${apiUrl}/scans/free`, {
+  const response = await fetch(`${apiUrl}/public/scans`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
