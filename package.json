@@ -1,0 +1,30 @@
+{
+  "name": "sentinel",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev --parallel",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "@sentinel/eslint-config": "workspace:*",
+    "eslint": "^9.17.0",
+    "playwright": "^1.49.1",
+    "pnpm": "9.15.4",
+    "prettier": "^3.4.2",
+    "prisma": "^6.1.0",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@prisma/client": "6.19.3"
+  }
+}
