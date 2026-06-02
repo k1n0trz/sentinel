@@ -1278,6 +1278,97 @@ h3 {
   font-size: 13px;
 }
 
+.stub {
+  display: grid;
+  min-height: calc(100vh - var(--header-h));
+  place-items: center;
+  padding: calc(var(--header-h) + 60px) 24px 80px;
+  text-align: center;
+}
+
+.stub-inner {
+  max-width: 620px;
+}
+
+.stub-eye {
+  width: 150px;
+  margin: 0 auto 36px;
+  filter: drop-shadow(0 0 26px rgba(255, 29, 53, 0.5));
+}
+
+.stub-eye .pupil {
+  animation: iris-pulse 3.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.stub-eye .ring {
+  animation: ring-rot 24s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.stub .eyebrow {
+  margin-bottom: 22px;
+}
+
+.stub h1 {
+  margin: 0 0 18px;
+  font-size: clamp(38px, 6vw, 62px);
+}
+
+.stub p {
+  margin: 0 0 18px;
+  color: var(--text-dim);
+  font-size: 18px;
+}
+
+.preview-list {
+  display: flex;
+  max-width: 540px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 8px auto 36px;
+  padding: 0;
+  list-style: none;
+}
+
+.preview-list li {
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-dim);
+  padding: 8px 15px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.stub-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.stub-progress {
+  overflow: hidden;
+  max-width: 320px;
+  height: 4px;
+  margin: 34px auto 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stub-progress i {
+  display: block;
+  width: 45%;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--blue), var(--red));
+  box-shadow: 0 0 12px rgba(0, 163, 255, 0.5);
+}
+
 @media (max-width: 1040px) {
   .nav,
   .link-login,

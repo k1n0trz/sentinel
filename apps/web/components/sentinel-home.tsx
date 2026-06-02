@@ -23,15 +23,16 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { runFreeScan } from '../lib/api';
+import { EyeLogo } from './site-shell';
 
 const navItems = [
-  ['Inicio', '#inicio'],
-  ['Características', '#caracteristicas'],
-  ['Soluciones', '#soluciones'],
-  ['Sandbox', '#sandbox'],
-  ['Precios', '#precios'],
-  ['Recursos', '#recursos'],
-  ['Contacto', '#contacto'],
+  ['Inicio', '/'],
+  ['Características', '/caracteristicas'],
+  ['Soluciones', '/soluciones'],
+  ['Sandbox', '/sandbox'],
+  ['Precios', '/precios'],
+  ['Recursos', '/recursos'],
+  ['Contacto', '/contacto'],
 ] as const;
 
 const problems = [
@@ -156,10 +157,10 @@ export function SentinelHome() {
             ))}
           </nav>
           <div className="header-actions">
-            <a className="link-login" href="#app">
+            <a className="link-login" href="/login">
               Iniciar sesión
             </a>
-            <a className="btn btn-primary btn-sm" href="#contacto">
+            <a className="btn btn-primary btn-sm" href="/contacto">
               Solicitar demo
             </a>
             <button
@@ -180,7 +181,7 @@ export function SentinelHome() {
             {label}
           </a>
         ))}
-        <a className="btn btn-primary" href="#contacto" onClick={() => setMenuOpen(false)}>
+        <a className="btn btn-primary" href="/contacto" onClick={() => setMenuOpen(false)}>
           Solicitar demo
         </a>
       </div>
@@ -448,7 +449,7 @@ export function SentinelHome() {
                   <div className="sol-body">
                     <h3>{title}</h3>
                     <p>{text}</p>
-                    <a className="sol-link" href="#contacto">
+              <a className="sol-link" href="/soluciones">
                       Ver solución <ChevronRight size={15} />
                     </a>
                   </div>
@@ -498,7 +499,7 @@ export function SentinelHome() {
                       </li>
                     ))}
                   </ul>
-                  <a className={plan.featured ? 'btn btn-primary' : 'btn btn-ghost'} href="#contacto">
+                  <a className={plan.featured ? 'btn btn-primary' : 'btn btn-ghost'} href="/contacto">
                     {plan.featured ? 'Activar Business' : 'Solicitar información'}
                   </a>
                 </div>
@@ -520,10 +521,10 @@ export function SentinelHome() {
                 </p>
               </div>
               <div className="hero-cta" style={{ margin: 0 }}>
-                <a className="btn btn-primary btn-lg" href="mailto:hola@sentinelcloud.dev">
+                <a className="btn btn-primary btn-lg" href="/contacto">
                   Solicitar demo
                 </a>
-                <a className="btn btn-ghost btn-lg" href="#precios">
+                <a className="btn btn-ghost btn-lg" href="/precios">
                   Ver precios
                 </a>
               </div>
@@ -543,16 +544,6 @@ function Metric({ label, value }: { label: string; value: string }) {
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
-  );
-}
-
-function EyeLogo() {
-  return (
-    <svg aria-hidden="true" className="eye-logo" fill="none" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 20 Q30 3 57 20 Q30 37 3 20Z" fill="rgba(0,163,255,0.05)" stroke="#00A3FF" strokeWidth="2" />
-      <circle cx="30" cy="20" fill="#FF1D35" r="8.5" />
-      <circle cx="30" cy="20" fill="#fff" r="3.6" />
-    </svg>
   );
 }
 
@@ -889,8 +880,25 @@ function Footer() {
             </div>
             <p>Vigilancia inteligente para productos digitales. Protege lo que más importa.</p>
           </div>
-          <FooterColumn items={['Características', 'Sandbox Visual', 'Precios', 'Dashboard', 'Seguridad']} title="Producto" />
-          <FooterColumn items={['Blog', 'Casos de uso', 'Documentación', 'Centro de ayuda']} title="Recursos" />
+          <FooterColumn
+            items={[
+              ['Características', '/caracteristicas'],
+              ['Sandbox Visual', '/sandbox'],
+              ['Precios', '/precios'],
+              ['Dashboard', '/#como'],
+              ['Seguridad', '/caracteristicas'],
+            ]}
+            title="Producto"
+          />
+          <FooterColumn
+            items={[
+              ['Blog', '/recursos'],
+              ['Casos de uso', '/recursos'],
+              ['Documentación', '/recursos'],
+              ['Centro de ayuda', '/recursos'],
+            ]}
+            title="Recursos"
+          />
           <div>
             <h4>Contacto</h4>
             <ul>
@@ -909,14 +917,14 @@ function Footer() {
   );
 }
 
-function FooterColumn({ items, title }: { items: string[]; title: string }) {
+function FooterColumn({ items, title }: { items: Array<[string, string]>; title: string }) {
   return (
     <div>
       <h4>{title}</h4>
       <ul>
-        {items.map((item) => (
+        {items.map(([item, href]) => (
           <li key={item}>
-            <a href="#inicio">{item}</a>
+            <a href={href}>{item}</a>
           </li>
         ))}
       </ul>
