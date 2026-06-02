@@ -53,6 +53,67 @@ Response:
 }
 ```
 
+## POST /public/scans
+
+Runs the public demo scan intended for `sentinelcloud.dev`.
+
+This endpoint is passive or low impact only. It is safe for the public demo and must not run deep checks without domain verification.
+
+Request:
+
+```json
+{
+  "url": "https://example.com",
+  "followRedirects": true,
+  "hideFromPublicResults": false
+}
+```
+
+Response includes the normal scan payload plus:
+
+```json
+{
+  "grade": "A",
+  "metadata": {
+    "responseTimeMs": 420,
+    "redirectChain": [
+      {
+        "from": "http://example.com/",
+        "to": "https://example.com/",
+        "status": 301
+      }
+    ],
+    "robotsTxt": {
+      "url": "https://example.com/robots.txt",
+      "present": true,
+      "status": 200
+    },
+    "sitemapXml": {
+      "url": "https://example.com/sitemap.xml",
+      "present": true,
+      "status": 200
+    }
+  }
+}
+```
+
+Grades:
+
+- `A+`, `A`, `B`, `C`, `D`, `E`, `F`
+- `R` when the target could not be reached
+
+## GET /public/scans/recent
+
+Returns recent public scans that were not hidden from public results.
+
+## GET /public/scans/:id
+
+Returns a public scan by id.
+
+## GET /public/reports/:scanId
+
+Returns a structured public report summary for the demo.
+
 ## GET /scans/:id
 
 Returns a previously saved in-memory scan result.

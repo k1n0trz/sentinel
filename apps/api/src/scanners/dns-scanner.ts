@@ -1,8 +1,21 @@
 import { resolve4, resolveMx, resolveNs } from 'node:dns/promises';
+import { isIP } from 'node:net';
 import type { DnsResult, Finding } from '@sentinel/shared';
 import { nanoid } from 'nanoid';
 
 export const scanDns = async (hostname: string) => {
+  if (isIP(hostname)) {
+    return {
+      dns: {
+        hostname,
+        addresses: [hostname],
+        mx: [],
+        ns: [],
+      },
+      findings: [],
+    };
+  }
+
   const [addresses, mxRecords, nsRecords] = await Promise.allSettled([
     resolve4(hostname),
     resolveMx(hostname),
@@ -42,4 +55,3 @@ export const scanDns = async (hostname: string) => {
 
   return { dns, findings };
 };
-

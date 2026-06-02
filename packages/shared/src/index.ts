@@ -9,8 +9,13 @@ export type RiskLevel = z.infer<typeof riskLevelSchema>;
 export const scanStatusSchema = z.enum(['queued', 'running', 'completed', 'failed']);
 export type ScanStatus = z.infer<typeof scanStatusSchema>;
 
+export const scanGradeSchema = z.enum(['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'R']);
+export type ScanGrade = z.infer<typeof scanGradeSchema>;
+
 export const freeScanRequestSchema = z.object({
   url: z.string().url().max(2048),
+  followRedirects: z.boolean().default(true),
+  hideFromPublicResults: z.boolean().default(false),
 });
 export type FreeScanRequest = z.infer<typeof freeScanRequestSchema>;
 
@@ -50,6 +55,28 @@ export const dnsResultSchema = z.object({
 });
 export type DnsResult = z.infer<typeof dnsResultSchema>;
 
+export const redirectHopSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  status: z.number(),
+});
+export type RedirectHop = z.infer<typeof redirectHopSchema>;
+
+export const publicResourceResultSchema = z.object({
+  url: z.string(),
+  present: z.boolean(),
+  status: z.number().optional(),
+});
+export type PublicResourceResult = z.infer<typeof publicResourceResultSchema>;
+
+export const passiveMetadataSchema = z.object({
+  responseTimeMs: z.number().optional(),
+  redirectChain: z.array(redirectHopSchema),
+  robotsTxt: publicResourceResultSchema.optional(),
+  sitemapXml: publicResourceResultSchema.optional(),
+});
+export type PassiveMetadata = z.infer<typeof passiveMetadataSchema>;
+
 export const scanResultSchema = z.object({
   id: z.string(),
   targetUrl: z.string(),
@@ -58,10 +85,12 @@ export const scanResultSchema = z.object({
   httpStatus: z.number().optional(),
   https: z.boolean(),
   score: z.number().min(0).max(100),
+  grade: scanGradeSchema,
   riskLevel: riskLevelSchema,
   headers: z.array(securityHeaderResultSchema),
   ssl: sslResultSchema.optional(),
   dns: dnsResultSchema.optional(),
+  metadata: passiveMetadataSchema.optional(),
   findings: z.array(findingSchema),
   createdAt: z.string(),
 });
@@ -75,3 +104,13 @@ export const scoreToRiskLevel = (score: number): RiskLevel => {
   return 'Critical';
 };
 
+export const scoreToGrade = (score: number, hasHttpFailure = false): ScanGrade => {
+  if (hasHttpFailure) return 'R';
+  if (score >= 97) return 'A+';
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  if (score >= 50) return 'E';
+  return 'F';
+};

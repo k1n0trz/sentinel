@@ -83,21 +83,28 @@ model Domain {
 }
 
 model Scan {
-  id         String      @id @default(cuid())
-  domainId   String?
-  domain     Domain?     @relation(fields: [domainId], references: [id], onDelete: SetNull)
-  targetUrl  String
-  finalUrl   String?
-  type       String      @default("free-passive")
-  status     ScanStatus  @default(COMPLETED)
-  score      Int
-  riskLevel  RiskLevel
-  rawResult  Json
-  findings   Finding[]
-  report     Report?
-  startedAt  DateTime?
-  finishedAt DateTime?
-  createdAt  DateTime    @default(now())
+  id                      String      @id @default(cuid())
+  domainId                String?
+  domain                  Domain?     @relation(fields: [domainId], references: [id], onDelete: SetNull)
+  targetUrl               String
+  finalUrl                String?
+  type                    String      @default("free-passive")
+  status                  ScanStatus  @default(COMPLETED)
+  score                   Int
+  grade                   String?
+  riskLevel               RiskLevel
+  httpStatus              Int?
+  responseTimeMs          Int?
+  public                  Boolean     @default(false)
+  hiddenFromPublicResults Boolean     @default(false)
+  rawResult               Json
+  findings                Finding[]
+  report                  Report?
+  startedAt               DateTime?
+  finishedAt              DateTime?
+  createdAt               DateTime    @default(now())
+
+  @@index([public, hiddenFromPublicResults, createdAt])
 }
 
 model Finding {
@@ -136,4 +143,3 @@ model Alert {
   sent      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
-

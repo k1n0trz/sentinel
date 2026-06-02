@@ -26,7 +26,7 @@ export function ScanConsole() {
     setError(null);
 
     try {
-      setScan(await runFreeScan({ url }));
+      setScan(await runFreeScan({ followRedirects: true, hideFromPublicResults: false, url }));
     } catch (scanError) {
       setError(scanError instanceof Error ? scanError.message : 'Unable to run scan');
     } finally {

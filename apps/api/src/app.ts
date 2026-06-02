@@ -4,6 +4,7 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify from 'fastify';
 import { env } from './config/env.js';
 import { registerHealthRoutes } from './health/health.routes.js';
+import { registerPublicRoutes } from './public/public.routes.js';
 import { registerReportRoutes } from './reports/reports.routes.js';
 import { registerScanRoutes } from './scans/scans.routes.js';
 
@@ -24,9 +25,9 @@ export const buildApp = async () => {
   });
 
   await registerHealthRoutes(app);
+  await registerPublicRoutes(app);
   await registerScanRoutes(app);
   await registerReportRoutes(app);
 
   return app;
 };
-
