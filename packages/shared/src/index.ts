@@ -29,10 +29,16 @@ export const findingSchema = z.object({
 });
 export type Finding = z.infer<typeof findingSchema>;
 
+export const securityHeaderStatusSchema = z.enum(['present', 'missing', 'weak', 'misconfigured']);
+export type SecurityHeaderStatus = z.infer<typeof securityHeaderStatusSchema>;
+
 export const securityHeaderResultSchema = z.object({
   name: z.string(),
   present: z.boolean(),
+  status: securityHeaderStatusSchema,
+  severity: severitySchema.optional(),
   value: z.string().optional(),
+  risk: z.string().optional(),
   recommendation: z.string().optional(),
 });
 export type SecurityHeaderResult = z.infer<typeof securityHeaderResultSchema>;

@@ -97,6 +97,27 @@ Response includes the normal scan payload plus:
 }
 ```
 
+Security header entries include richer analysis:
+
+```json
+{
+  "name": "Content-Security-Policy",
+  "present": true,
+  "status": "weak",
+  "severity": "medium",
+  "value": "default-src * 'unsafe-inline'",
+  "risk": "Content-Security-Policy is present but allows unsafe-inline, uses wildcard sources.",
+  "recommendation": "Tighten CSP with explicit source lists, start with Report-Only if needed, and remove unsafe-inline/unsafe-eval wherever possible."
+}
+```
+
+Header statuses:
+
+- `present`
+- `missing`
+- `weak`
+- `misconfigured`
+
 Grades:
 
 - `A+`, `A`, `B`, `C`, `D`, `E`, `F`
