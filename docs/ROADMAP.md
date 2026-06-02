@@ -1,40 +1,66 @@
 # Sentinel Cloud Roadmap
 
-Este roadmap conecta el estado actual del repositorio con el objetivo de probar Sentinel como un super agente de ciberseguridad defensiva.
+Este roadmap conecta el estado actual del repositorio con el objetivo de convertir Sentinel en un agente profesional de ciberseguridad defensiva para sitios web, apps, ecommerce, CMS, APIs e integraciones.
+
+## Vision
+
+Sentinel no debe ser solo un scanner de headers.
+
+La vision es construir un agente de seguridad que:
+
+- Entiende la superficie digital de un proyecto.
+- Monitorea dominios, apps, APIs e integraciones.
+- Ejecuta diagnosticos pasivos y pruebas autorizadas.
+- Navega apps reales en un sandbox visual.
+- Genera evidencia tecnica y reportes ejecutivos.
+- Prioriza riesgos segun impacto.
+- Recomienda hardening aplicable.
+- Alerta cambios importantes.
+- Se integra con WordPress, WooCommerce, Shopify, GitHub, Vercel, Cloudflare y otros stacks.
+
+Principio base: todo modulo profundo requiere autorizacion explicita y dominio verificado.
 
 ## Estado Actual
 
 Ya existe:
 
 - Monorepo con `apps/web`, `apps/api`, `packages/shared` y tooling base.
-- API Fastify con health check, rate limiting global y scanner pasivo inicial.
-- Scanner MVP para URL, status HTTP, redirects, security headers, SSL basico, DNS basico, findings y scoring.
-- Web interna provisional en `localhost:3100`.
-- API local en `localhost:4100`.
+- API Fastify con health check y rate limiting global.
+- Scanner pasivo inicial para URL, status HTTP, redirects, security headers, SSL basico, DNS basico, robots.txt, sitemap.xml, findings y scoring.
+- Normalizacion de dominios sin protocolo.
+- Endpoint publico `POST /public/scans`.
+- Pagina `/diagnostico` con formulario real de scan.
+- Reporte publico inicial con summary, grade, score, IP, headers, raw headers, DNS, SSL, redirects y recomendaciones.
+- Redireccion de CTAs de la home hacia `/diagnostico`.
 - Prisma schema preparado para usuarios, proyectos, dominios, scans, findings, reports y alerts.
 - Docker Compose con PostgreSQL y Redis.
 - Docs base de producto, arquitectura, API, seguridad y ficha tecnica.
 
 Limitaciones actuales:
 
-- Los scans se guardan en memoria, no en PostgreSQL.
-- No hay autenticacion ni ownership verification.
-- No hay separacion formal entre demo publico y app profesional.
-- No hay jobs recurrentes ni monitoreo continuo.
-- No hay Playwright sandbox, analisis de APIs, subdominios, WordPress, repositorios ni modulo IA.
+- Los scans se guardan principalmente en memoria; la persistencia real aun debe consolidarse.
+- No hay autenticacion.
+- No hay SaaS shell para `app.sentinelcloud.dev`.
+- No hay proyectos ni dominios verificados.
+- No hay scheduler ni monitoreo recurrente.
+- No hay sandbox visual con Playwright.
+- No hay integraciones WordPress, WooCommerce, Shopify, GitHub, Cloudflare o Vercel.
+- No hay AI Security Analyst.
+- No hay billing ni limites por plan.
 
 ## Arquitectura de Producto
 
 ### `sentinelcloud.dev`
 
-Sitio publico y demo gratuito. El frontend principal se desarrollara fuera de este repo inicialmente y luego se integrara.
+Sitio publico, marca, contenido, pricing y demo gratuito.
 
-Objetivo del demo:
+Objetivo:
 
-- Funcionar como SecurityHeaders, pero con mejor UX, mejor explicacion y mas contexto.
-- Permitir un scan publico pasivo o de bajo impacto.
-- Capturar leads sin exigir cuenta.
-- Mostrar resultados entendibles para cliente no tecnico y accionables para desarrollador.
+- Mostrar el valor de Sentinel sin exigir cuenta.
+- Permitir un diagnostico publico pasivo de bajo impacto.
+- Capturar leads.
+- Entregar un reporte entendible y accionable.
+- Llevar al usuario hacia `app.sentinelcloud.dev` cuando quiera monitoreo, historial, sandbox, integraciones o reportes profesionales.
 
 Reglas del demo:
 
@@ -42,126 +68,342 @@ Reglas del demo:
 - Sin fuerza bruta.
 - Sin payloads agresivos.
 - Sin extraccion de datos sensibles.
-- Rate limiting estricto.
-- Opcion de ocultar resultados publicos.
-- Opcion de seguir redirects.
+- Sin historial publico.
+- Sin rankings publicos.
+- Sin hall of fame ni hall of shame.
+- El resultado solo queda disponible para quien lo solicita por sesion o link de reporte.
+- Aplicar rate limit estricto por IP, dominio y ventana temporal.
 - No permitir scans profundos sin verificacion de dominio.
 
 ### `app.sentinelcloud.dev`
 
-Aplicativo profesional SaaS que se vendera por planes.
+Aplicativo profesional SaaS de pago.
 
 Objetivo:
 
-- Gestionar usuarios, proyectos, dominios verificados, scans guardados, reportes, alertas, historial, monitoreo y modulos avanzados.
-- Convertir Sentinel en una capa preventiva continua, no solo en un scanner puntual.
+- Gestionar usuarios, proyectos, dominios verificados, scans, historial, reportes, alertas, sandbox, integraciones y monitoreo continuo.
+- Convertir Sentinel en una capa preventiva recurrente, no solo en un scanner puntual.
 
 Reglas de la app:
 
 - Requiere autenticacion.
 - Requiere verificacion de dominio para scans avanzados.
 - Aplica limites por plan.
-- Mantiene historial y evidencia.
+- Mantiene historial privado.
 - Permite monitoreo recurrente.
-- Explica riesgos con IA bajo un modelo defensivo y autorizado.
+- Permite integraciones autorizadas.
+- Explica riesgos con IA bajo un modelo defensivo.
 
-## Fase 1: Endurecer el Demo Publico
+## Distribucion por Planes
 
-Objetivo: tener un demo gratuito comparable a SecurityHeaders, pero mejor explicado.
+### Demo Gratuito
+
+Uso: `sentinelcloud.dev/diagnostico`.
+
+Incluye:
+
+- Diagnostico publico de headers.
+- SSL basico.
+- DNS basico.
+- Redirects.
+- robots.txt y sitemap.xml.
+- Score y grade.
+- Reporte basico por sesion o link.
+- Opcion de ocultar resultado de cualquier uso interno futuro.
+
+No incluye:
+
+- Historial publico.
+- Monitoreo.
+- Sandbox.
+- Integraciones.
+- Dominio verificado.
+- AI Analyst avanzado.
+
+Objetivo comercial:
+
+- Capturar leads.
+- Demostrar valor rapido.
+- Llevar a cuenta paga.
+
+### Starter
+
+Para freelancers, sitios pequenos, landing pages, blogs y negocios con un dominio principal.
+
+Incluye:
+
+- 1 dominio verificado.
+- Monitoreo semanal.
+- Historial privado de scans.
+- Alertas basicas por email.
+- Security headers monitoring.
+- SSL expiration monitoring.
+- DNS basico.
+- Reporte mensual basico.
+- Checklist de hardening.
+- Recomendaciones para Cloudflare, Vercel, Nginx y Apache.
+
+No incluye:
+
+- Sandbox avanzado.
+- Integraciones ecommerce profundas.
+- AI Analyst completo.
+- GitHub scanner.
+
+Objetivo comercial:
+
+- Vender tranquilidad basica y vigilancia continua.
+
+### Business
+
+Plan recomendado para SaaS pequenos, ecommerce, agencias, WordPress, WooCommerce y Shopify inicial.
+
+Incluye:
+
+- 3 dominios verificados.
+- Monitoreo diario.
+- Alertas por email y canal secundario futuro.
+- Sandbox visual basico.
+- Screenshot de home.
+- Errores de consola.
+- Requests fallidas.
+- Mixed content.
+- Cookies inseguras basicas.
+- Formularios visibles.
+- WordPress/WooCommerce Guardian basico.
+- Shopify theme/app risk basico.
+- Reportes para cliente.
+- Comparacion antes/despues.
+
+Objetivo comercial:
+
+- Convertir Sentinel en una herramienta util para sitios reales y ecommerce.
+
+### Pro
+
+Para equipos tecnicos, apps con login, APIs, ecommerce serio y agencias con varios clientes.
+
+Incluye:
+
+- 10 dominios o proyectos.
+- Monitoreo configurable.
+- Sandbox avanzado por rutas.
+- Analisis de login, checkout y formularios criticos.
+- Deteccion de APIs llamadas desde frontend.
+- CORS scanner basico.
+- Subdomain discovery pasivo.
+- DNS avanzado: A, AAAA, CNAME, MX, TXT, NS, SPF, DKIM, DMARC.
+- Technology fingerprinting.
+- GitHub integration futura.
+- AI Security Analyst.
+- Plan de remediacion priorizado.
+- Reportes ejecutivos y tecnicos.
+- Estados de findings: `open`, `fixed`, `accepted`, `ignored`.
+
+Objetivo comercial:
+
+- Vender un agente de seguridad real para apps y APIs.
+
+### Enterprise
+
+Para empresas, agencias grandes, infraestructura compleja, compliance y necesidades a medida.
+
+Incluye:
+
+- Dominios y proyectos personalizados.
+- Monitoreo 24/7 o frecuencias custom.
+- Sandbox avanzado con flujos configurados.
+- Integraciones personalizadas.
+- Slack, Discord, Teams y webhooks.
+- Reportes privados compartibles.
+- Panel admin.
+- SLA.
+- Soporte tecnico.
+- Compliance light: OWASP, GDPR/privacy posture, auditoria express.
+- Supply chain risk.
+- GitHub/repo scanner avanzado.
+- Hardening asistido.
+- Post-Quantum Readiness futuro.
+- Politicas de retencion custom.
+- White label para agencias.
+
+Objetivo comercial:
+
+- Vender seguridad continua, integraciones y evidencia para operaciones serias.
+
+## Roadmap por Fases
+
+## Fase 1: Demo Publico Real
+
+Objetivo: que `sentinelcloud.dev` tenga un diagnostico publico comparable a SecurityHeaders, pero con mejor explicacion, mejor UX y contexto Sentinel.
 
 Acciones:
 
+- Mantener `/diagnostico` como pantalla dedicada para ejecutar scans publicos.
 - Separar endpoint publico `POST /public/scans` del futuro endpoint profesional.
-- Agregar opciones `followRedirects` y `hideFromPublicResults`.
 - Medir response time, redirect chain, final URL y canonical URL.
 - Guardar scans publicos en PostgreSQL con retencion corta.
+- Crear reporte publico compartible por link.
 - Mejorar security headers scanner para detectar `missing`, `weak`, `present` y `misconfigured`.
-- Agregar grading tipo A+, A, B, C, D, E, F, R junto al score 0-100.
+- Agregar grading A+, A, B, C, D, E, F, R junto al score 0-100.
 - Agregar robots.txt y sitemap.xml como checks pasivos.
 - Agregar deteccion basica de tecnologias visibles con baja confianza: Cloudflare, Vercel, Netlify, Nginx, Apache, Next.js, WordPress.
-- Agregar endpoint publico de reporte compartible.
 - Agregar proteccion contra abuso: rate limit por IP, user agent, dominio y ventana temporal.
 
 Criterios de prueba:
 
 - Un visitante puede escanear un dominio y obtener score, grade, findings y recomendaciones.
 - El scan no ejecuta payloads ofensivos.
-- El resultado no aparece en listados publicos; solo queda disponible por link de reporte y politica de retencion.
+- El resultado no aparece en listados publicos.
+- El reporte puede compartirse por link o mantenerse privado segun politica de retencion.
 - El sistema explica por que falta cada header y como corregirlo.
 
-## Fase 2: Persistencia y SaaS Base
+## Fase 2: Persistencia y SaaS Shell
 
-Objetivo: convertir el MVP en app profesional usable.
+Objetivo: empezar `app.sentinelcloud.dev` temprano, sin esperar a terminar todos los scanners.
 
 Acciones:
 
 - Implementar Prisma persistence para scans, findings y reports.
-- Crear auth con email/password o magic link.
+- Crear auth con email/password, magic link, Clerk, Supabase Auth o Auth.js.
+- Crear dashboard privado base.
 - Crear modelos funcionales de User, Project y Domain.
-- Crear dashboard de `app.sentinelcloud.dev`.
 - Crear CRUD de proyectos.
 - Crear CRUD de dominios.
-- Implementar verificacion de dominio por DNS TXT y archivo `.well-known`.
-- Bloquear scans avanzados hasta que el dominio este verificado.
+- Crear historial privado de scans.
+- Separar vistas publicas (`sentinelcloud.dev`) de vistas privadas (`app.sentinelcloud.dev`).
 - Crear roles `USER` y `ADMIN`.
 - Crear planes `FREE`, `STARTER`, `BUSINESS`, `PRO`, `ENTERPRISE`.
 - Agregar limites por plan.
 
 Criterios de prueba:
 
-- Un usuario crea cuenta, proyecto y dominio.
-- El dominio no verificado solo permite checks publicos.
-- El dominio verificado habilita scans profesionales.
-- Los scans quedan guardados con historial.
+- Un usuario crea cuenta.
+- Un usuario crea proyecto.
+- Un usuario agrega dominio.
+- Un usuario ve historial privado de scans.
+- El demo publico y la app privada comparten motor, pero no reglas de acceso.
 
-## Fase 3: Reportes Profesionales
+## Fase 3: Verificacion de Dominio
 
-Objetivo: que Sentinel venda valor, no solo datos tecnicos.
+Objetivo: habilitar scans profesionales solo sobre activos autorizados.
 
 Acciones:
 
-- Crear report generator HTML.
+- Implementar verificacion DNS TXT.
+- Implementar verificacion por archivo `.well-known/sentinel-verification.txt`.
+- Guardar estado de verificacion.
+- Bloquear scans avanzados hasta que el dominio este verificado.
+- Permitir reverificacion periodica.
+- Registrar evidencia de verificacion.
+- Manejar dominios raiz y subdominios.
+
+Criterios de prueba:
+
+- Un dominio no verificado solo permite checks publicos.
+- Un dominio verificado habilita sandbox, monitoreo e integraciones.
+- El sistema puede revocar permisos si la verificacion deja de existir.
+
+## Fase 4: Reportes Profesionales
+
+Objetivo: convertir resultados en consultoria vendible.
+
+Acciones:
+
+- Crear reporte HTML profesional.
 - Crear resumen ejecutivo.
 - Crear resumen tecnico.
 - Crear checklist de hardening.
 - Crear findings con evidencia estructurada.
 - Agregar estados de finding: `open`, `accepted`, `fixed`, `ignored`.
 - Crear comparacion entre scans.
-- Crear descarga PDF futura o export HTML imprimible.
 - Crear link privado compartible.
+- Preparar export PDF futuro o HTML imprimible.
+- Crear plantillas de reporte: auditoria express, ecommerce, web + API, WordPress, WooCommerce.
 
 Criterios de prueba:
 
 - Un reporte puede enviarse a un cliente no tecnico.
 - Un desarrollador puede usar el mismo reporte para corregir.
 - El historial muestra si el score mejoro o empeoro.
+- El reporte explica impacto tecnico e impacto de negocio.
 
-## Fase 4: Visual Sandbox Tester
+## Fase 5: Visual Sandbox Tester
 
-Objetivo: convertir Sentinel en un agente que observa la app como un navegador real.
+Objetivo: convertir Sentinel en un agente que observa la app como navegador real.
 
-Acciones:
+El sandbox pertenece a `app.sentinelcloud.dev`, no al demo publico, porque implica interaccion mas profunda y debe requerir dominio verificado.
 
-- Integrar Playwright en servicio aislado.
-- Capturar screenshot de home.
+MVP del sandbox:
+
+- Abrir la home con Playwright en entorno aislado.
+- Capturar screenshot.
 - Registrar errores de consola.
 - Registrar failed requests.
 - Detectar mixed content.
-- Capturar cookies, localStorage y sessionStorage sin guardar valores sensibles.
 - Detectar formularios visibles.
+- Detectar iframes y scripts externos.
+- Capturar metadata de cookies sin guardar valores sensibles.
 - Medir tiempos de carga basicos.
 - Guardar evidencia visual por scan.
 - Aislar ejecucion con limites de tiempo y recursos.
+
+Evolucion:
+
+- Rutas configurables.
+- Login asistido.
+- Checkout/ecommerce flows.
+- Form analyzer avanzado.
+- Cookie/session analyzer.
+- DOM risk scan.
+- Network watcher avanzado.
+- Evidencia visual por hallazgo.
 
 Criterios de prueba:
 
 - Un dominio verificado genera evidencia visual.
 - El reporte muestra screenshot, errores de consola y requests fallidas.
 - No se almacenan tokens ni valores sensibles.
+- El sandbox produce findings accionables.
 
-## Fase 5: Expansion de Superficie
+## Fase 6: Integraciones CMS y Ecommerce
 
-Objetivo: ampliar el diagnostico sin romper las reglas defensivas.
+Objetivo: convertir Sentinel en agente util para negocios reales que usan plataformas comunes.
+
+### WordPress/WooCommerce Guardian
+
+Acciones:
+
+- Detectar WordPress con baja confianza.
+- Revisar exposicion de `wp-json`.
+- Revisar XML-RPC expuesto.
+- Detectar usuarios enumerables si es pasivo y permitido.
+- Revisar headers.
+- Revisar SSL/DNS.
+- Detectar backups publicos comunes sin fuerza bruta.
+- Revisar WooCommerce checkout signals.
+- Detectar plugins visibles de alto riesgo por version solo si la version esta expuesta publicamente.
+
+### Shopify Guardian
+
+Acciones:
+
+- Detectar Shopify/theme signals.
+- Revisar CSP y headers aplicables.
+- Revisar dominios y redirects.
+- Detectar scripts externos visibles.
+- Detectar tracking scripts sospechosos o excesivos.
+- Revisar recursos publicos del theme.
+
+Criterios de prueba:
+
+- Sentinel identifica riesgos comunes sin explotar vulnerabilidades.
+- Cada hallazgo tiene evidencia y recomendacion.
+- Las integraciones profundas requieren dominio verificado o conexion autorizada.
+
+## Fase 7: Expansion de Superficie
+
+Objetivo: ampliar el diagnostico defensivo sin romper limites de autorizacion.
 
 Acciones:
 
@@ -169,9 +411,9 @@ Acciones:
 - API exposure scanner para rutas comunes autorizadas.
 - CORS scanner basico.
 - Frontend risk analyzer para sourcemaps, comentarios sensibles y variables publicas sospechosas.
-- DNS avanzado: A, AAAA, CNAME, MX, TXT, NS, SPF, DKIM, DMARC.
-- WordPress/WooCommerce Guardian sin login ni fuerza bruta.
+- DNS avanzado.
 - Technology fingerprinting con niveles de confianza.
+- Third-party dependency surface: scripts externos, CDNs, pixels y vendors.
 
 Criterios de prueba:
 
@@ -179,7 +421,7 @@ Criterios de prueba:
 - Todo modulo avanzado requiere dominio verificado.
 - Cada hallazgo tiene impacto, evidencia y recomendacion.
 
-## Fase 6: Monitoreo Continuo
+## Fase 8: Monitoreo Continuo
 
 Objetivo: crear valor recurrente y MRR.
 
@@ -193,15 +435,16 @@ Acciones:
 - Alertar cambios DNS.
 - Alertar nuevo subdominio.
 - Alertar caida del sitio.
-- Crear canales de alerta: email primero, luego Slack, Discord, Telegram, WhatsApp.
+- Alertar errores nuevos del sandbox.
+- Crear canales de alerta: email primero, luego Slack, Discord, Telegram, WhatsApp y webhooks.
 
 Criterios de prueba:
 
 - Un dominio verificado puede monitorearse semanalmente.
 - El usuario recibe alerta ante un cambio critico.
-- El historial compara scans anteriores.
+- El historial privado compara scans anteriores.
 
-## Fase 7: AI Security Analyst
+## Fase 9: AI Security Analyst
 
 Objetivo: que Sentinel explique como consultor y priorice como analista.
 
@@ -210,6 +453,7 @@ Acciones:
 - Crear interfaz `AIProvider` desacoplada de proveedor.
 - Crear prompts por modulo: executive, technical, remediation, client summary.
 - Generar resumen ejecutivo.
+- Generar resumen tecnico.
 - Generar plan de correccion por prioridad.
 - Generar mensaje para cliente no tecnico.
 - Generar mensaje para desarrollador.
@@ -222,37 +466,39 @@ Criterios de prueba:
 - La explicacion distingue riesgo tecnico e impacto de negocio.
 - Las recomendaciones son defensivas.
 
-## Fase 8: App Profesional Comercial
+## Fase 10: Hardening Asistido
 
-Objetivo: preparar venta real.
+Objetivo: pasar de diagnostico a accion.
 
 Acciones:
 
-- Crear billing con Stripe primero.
-- Implementar limites por plan.
-- Crear onboarding.
-- Crear admin panel.
-- Crear pagina de plan y uso.
-- Crear trial o free scan lead capture.
-- Crear plantillas de auditoria express, ecommerce y web + API.
+- Generar snippets para Next.js.
+- Generar snippets para Express/Fastify.
+- Generar snippets para Nginx.
+- Generar snippets para Apache.
+- Generar reglas sugeridas para Cloudflare.
+- Generar recomendaciones para Vercel.
+- Generar checklist WordPress/WooCommerce.
+- Generar recomendaciones Shopify.
+- Crear issues o tareas internas.
 
 Criterios de prueba:
 
-- Un usuario puede pasar de demo gratis a cuenta.
-- Un usuario puede agregar dominios segun su plan.
-- El sistema bloquea features fuera de plan.
+- Sentinel recomienda cambios aplicables.
+- Cada recomendacion esta ligada a un finding.
+- Ninguna recomendacion ejecuta cambios sin aprobacion.
 
-## Fase 9: GitHub y Hardening Asistido
+## Fase 11: GitHub y Supply Chain
 
-Objetivo: que Sentinel pase de diagnostico a accion.
+Objetivo: analizar repos autorizados y riesgos de cadena de suministro.
 
 Acciones:
 
 - Integrar GitHub OAuth.
 - Leer repos autorizados.
 - Analizar dependencias, lockfiles, Dockerfiles, GitHub Actions y archivos sensibles.
+- Detectar secretos solo con manejo seguro y sin exponer valores.
 - Generar issues con recomendaciones.
-- Generar snippets de hardening para Next.js, Express/Fastify, Nginx, Apache, Vercel y WordPress.
 - Preparar pull requests futuros bajo aprobacion explicita.
 
 Criterios de prueba:
@@ -261,7 +507,50 @@ Criterios de prueba:
 - Genera issues utiles sin exponer secretos.
 - Sugiere hardening aplicable.
 
-## Fase 10: Super Agente Beta
+## Fase 12: Billing y Comercializacion
+
+Objetivo: preparar venta real.
+
+Acciones:
+
+- Crear billing con Stripe.
+- Implementar limites por plan.
+- Crear onboarding.
+- Crear admin panel.
+- Crear pagina de plan y uso.
+- Crear trial.
+- Crear lead capture desde demo publico.
+- Crear plantillas comerciales por tipo de cliente: agencia, SaaS, ecommerce, WordPress, WooCommerce.
+
+Criterios de prueba:
+
+- Un usuario puede pasar de demo gratis a cuenta.
+- Un usuario puede agregar dominios segun su plan.
+- El sistema bloquea features fuera de plan.
+- El usuario entiende por que debe subir de plan.
+
+## Fase 13: Future Shield
+
+Objetivo: preparar capacidades premium futuras sin prometer humo.
+
+Modulos posibles:
+
+- Post-Quantum Readiness.
+- Inventario TLS/certificados.
+- Identificacion de algoritmos criptograficos visibles.
+- Recomendaciones de preparacion para migracion post-quantum.
+- Compliance posture.
+- Supply chain risk avanzado.
+- Attack Surface Map.
+- Autonomous remediation suggestions bajo aprobacion.
+
+Criterios de prueba:
+
+- El modulo no promete "seguridad cuantica" de forma falsa.
+- El enfoque es readiness, inventario y preparacion.
+- Las recomendaciones son defensivas, verificables y auditables.
+
+## Fase 14: Super Agente Beta
 
 Objetivo: probar Sentinel como agente integral de ciberseguridad defensiva.
 
@@ -272,13 +561,16 @@ Capacidades minimas del beta:
 - Usuarios, proyectos y dominios verificados.
 - Scanner pasivo publico.
 - Scanner profesional con sandbox visual.
+- WordPress/WooCommerce Guardian basico.
+- Shopify Guardian basico.
 - Subdominios pasivos.
 - API exposure basico.
-- WordPress/WooCommerce Guardian basico.
+- DNS avanzado.
 - Monitoreo recurrente.
 - Alertas.
 - Reporte ejecutivo, tecnico y checklist.
 - AI Security Analyst.
+- Hardening asistido.
 
 Criterios de prueba del super agente:
 
@@ -293,19 +585,49 @@ Criterios de prueba del super agente:
 
 ## Orden Recomendado de Ejecucion
 
-1. Persistencia de scans publicos.
-2. Demo publico estilo SecurityHeaders mejorado.
-3. Separacion `public` vs `app`.
-4. Auth, proyectos y dominios.
-5. Verificacion de dominio.
-6. Reportes profesionales.
-7. Playwright sandbox.
-8. DNS avanzado y tecnologia visible.
-9. API exposure y subdominios.
-10. Monitoreo recurrente.
-11. AI Security Analyst.
-12. Billing y planes.
-13. GitHub/hardening asistido.
+1. Persistencia real de scans y reports.
+2. Link de reporte publico privado/compartible.
+3. Rate limiting fino por IP y dominio.
+4. SaaS shell de `app.sentinelcloud.dev`.
+5. Auth, proyectos y dominios.
+6. Verificacion de dominio.
+7. Historial privado.
+8. Reportes profesionales.
+9. Visual Sandbox MVP.
+10. Planes y limites.
+11. WordPress/WooCommerce Guardian basico.
+12. Shopify Guardian basico.
+13. DNS avanzado y tecnologia visible.
+14. API exposure y subdominios.
+15. Monitoreo recurrente.
+16. Alertas.
+17. AI Security Analyst.
+18. Hardening asistido.
+19. Billing.
+20. GitHub/supply chain.
+21. Future Shield.
+22. Super Agente Beta.
+
+## Proximo Sprint Recomendado
+
+Sprint recomendado: `SaaS Foundation + Persistencia`.
+
+Por que:
+
+- El demo publico ya existe y comunica valor.
+- La app de pago debe empezar temprano.
+- Sin persistencia no hay historial privado, reportes compartibles ni monitoreo.
+- Sin auth/proyectos/dominios no hay forma de vender planes.
+
+Entregables:
+
+- Scans guardados en PostgreSQL.
+- Reportes guardados y consultables por ID.
+- Primer dashboard privado.
+- Auth inicial.
+- CRUD de proyectos.
+- CRUD de dominios.
+- Estado de verificacion pendiente/verificado.
 
 ## Decisiones Pendientes
 
@@ -315,4 +637,7 @@ Criterios de prueba del super agente:
 - Dominio final y configuracion Vercel.
 - Si `apps/web` sera reemplazada por el frontend de Claude o quedara como app shell.
 - Politica de retencion para scans publicos.
+- Politica de retencion para evidencia sandbox.
+- Limites exactos por plan.
+- Precio final de Starter, Business, Pro y Enterprise.
 - Licencia privada o propietaria.
