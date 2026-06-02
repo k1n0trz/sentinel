@@ -1,8 +1,9 @@
 import type { FastifyInstance } from 'fastify';
 import { ZodError } from 'zod';
 import { AppError } from '../common/errors.js';
-import { getScan, listRecentPublicScans } from '../scans/scan-store.js';
 import { runFreeScan } from '../scans/free-scan.service.js';
+import { getSavedScan } from '../scans/scan-repository.js';
+import { summarizeScan } from '../scans/scan-report-summary.js';
 
 export const registerPublicRoutes = async (app: FastifyInstance) => {
   app.post('/public/scans', async (request, reply) => {
@@ -21,21 +22,9 @@ export const registerPublicRoutes = async (app: FastifyInstance) => {
     }
   });
 
-  app.get('/public/scans/recent', async () => ({
-    scans: listRecentPublicScans(20).map((scan) => ({
-      id: scan.id,
-      targetUrl: scan.targetUrl,
-      finalUrl: scan.finalUrl,
-      score: scan.score,
-      grade: scan.grade,
-      riskLevel: scan.riskLevel,
-      createdAt: scan.createdAt,
-    })),
-  }));
-
   app.get('/public/scans/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
-    const scan = getScan(id);
+    const scan = await getSavedScan(id, { publicOnly: true });
 
     if (!scan) {
       return reply.status(404).send({ error: 'Scan not found' });
@@ -46,7 +35,7 @@ export const registerPublicRoutes = async (app: FastifyInstance) => {
 
   app.get('/public/reports/:scanId', async (request, reply) => {
     const { scanId } = request.params as { scanId: string };
-    const scan = getScan(scanId);
+    const scan = await getSavedScan(scanId, { publicOnly: true });
 
     if (!scan) {
       return reply.status(404).send({ error: 'Scan not found' });
@@ -55,18 +44,7 @@ export const registerPublicRoutes = async (app: FastifyInstance) => {
     return {
       scan,
       public: true,
-      summary: {
-        score: scan.score,
-        grade: scan.grade,
-        riskLevel: scan.riskLevel,
-        responseTimeMs: scan.metadata?.responseTimeMs,
-        redirectHops: scan.metadata?.redirectChain.length ?? 0,
-        findingsBySeverity: scan.findings.reduce<Record<string, number>>((acc, finding) => {
-          acc[finding.severity] = (acc[finding.severity] ?? 0) + 1;
-          return acc;
-        }, {}),
-      },
+      summary: summarizeScan(scan),
     };
   });
 };
-

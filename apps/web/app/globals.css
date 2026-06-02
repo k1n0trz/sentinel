@@ -1566,6 +1566,13 @@ h3 {
   gap: 14px;
 }
 
+.advanced-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .summary-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1718,6 +1725,21 @@ h3 {
   color: var(--text-dim);
 }
 
+.shared-report-page .diagnostic-report {
+  padding-top: 0;
+}
+
+.shared-report-status {
+  display: grid;
+  gap: 14px;
+  align-self: stretch;
+}
+
+.shared-report-status strong {
+  color: var(--text);
+  font-size: 22px;
+}
+
 @media (max-width: 1040px) {
   .nav,
   .link-login,
@@ -1824,6 +1846,10 @@ h3 {
 
   .advanced-row {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .advanced-actions {
     flex-direction: column;
   }
 }

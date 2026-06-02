@@ -17,15 +17,4 @@ export const saveScan = (
 
 export const getScan = (id: string) => scans.get(id);
 
-export const listRecentScans = (limit = 20) =>
-  Array.from(scans.values())
-    .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt))
-    .slice(0, limit);
-
-export const listRecentPublicScans = (limit = 20) =>
-  listRecentScans(100)
-    .filter((scan) => {
-      const visibility = scanVisibility.get(scan.id);
-      return visibility?.public && !visibility.hiddenFromPublicResults;
-    })
-    .slice(0, limit);
+export const getScanVisibility = (id: string) => scanVisibility.get(id);

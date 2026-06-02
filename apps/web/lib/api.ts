@@ -21,3 +21,16 @@ export const runFreeScan = async (payload: FreeScanRequest): Promise<ScanResult>
 
   return scanResultSchema.parse(data);
 };
+
+export const getPublicScan = async (scanId: string): Promise<ScanResult> => {
+  const response = await fetch(`${apiUrl}/public/scans/${encodeURIComponent(scanId)}`);
+  const data: unknown = await response.json();
+
+  if (!response.ok) {
+    const message =
+      typeof data === 'object' && data && 'error' in data ? String(data.error) : 'Scan not found';
+    throw new Error(message);
+  }
+
+  return scanResultSchema.parse(data);
+};

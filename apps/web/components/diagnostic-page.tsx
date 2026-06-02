@@ -135,12 +135,6 @@ export function DiagnosticPage() {
     void executeScan(url, followRedirects, hideFromPublicResults);
   };
 
-  const missingHeaders = scan?.headers.filter((header) => header.status === 'missing') ?? [];
-  const attentionHeaders = scan?.headers.filter((header) => header.status === 'weak' || header.status === 'misconfigured') ?? [];
-  const presentHeaders = scan?.headers.filter((header) => header.present) ?? [];
-  const rawHeaders = importantHeadersFirst(scan?.metadata?.rawHeaders ?? []);
-  const upcomingHeaders = (scan?.headers ?? []).filter((header) => upcomingHeaderNames.includes(header.name));
-
   return (
     <>
       <SiteHeader />
@@ -196,50 +190,66 @@ export function DiagnosticPage() {
           </form>
         </section>
 
-        <section className="wrap diagnostic-report">
-          <ReportSummary scan={scan} />
-
-          {scan ? (
-            <>
-              <ReportSection title="Headers faltantes">
-                {missingHeaders.length > 0 ? (
-                  <HeaderExplanationList headers={missingHeaders} />
-                ) : (
-                  <EmptyReportLine text="No se detectaron headers críticos faltantes en este diagnóstico pasivo." />
-                )}
-              </ReportSection>
-
-              <ReportSection title="Headers débiles o mal configurados">
-                {attentionHeaders.length > 0 ? (
-                  <HeaderExplanationList headers={attentionHeaders} />
-                ) : (
-                  <EmptyReportLine text="Los headers presentes no mostraron debilidades evidentes según las reglas actuales." />
-                )}
-              </ReportSection>
-
-              <ReportSection title="Raw headers">
-                {rawHeaders.length > 0 ? <RawHeadersTable headers={rawHeaders} httpStatus={scan.httpStatus} /> : <EmptyReportLine text="No se recibieron headers HTTP del target." />}
-              </ReportSection>
-
-              <ReportSection title="Upcoming headers">
-                <HeaderExplanationList headers={upcomingHeaders} />
-              </ReportSection>
-
-              <ReportSection title="Información adicional">
-                <AdditionalInfo scan={scan} headers={presentHeaders} />
-              </ReportSection>
-            </>
-          ) : (
-            <div className="diagnostic-empty">
-              <Radar size={34} />
-              <h2>Ejecuta un diagnóstico para generar el reporte.</h2>
-              <p>Verás grade, score, IP, headers detectados, faltantes, raw headers, DNS, SSL y recomendaciones.</p>
-            </div>
-          )}
-        </section>
+        <DiagnosticReport scan={scan} />
       </main>
       <SiteFooter />
     </>
+  );
+}
+
+export function DiagnosticReport({ scan }: { scan: ScanResult | null }) {
+  const missingHeaders = scan?.headers.filter((header) => header.status === 'missing') ?? [];
+  const attentionHeaders = scan?.headers.filter((header) => header.status === 'weak' || header.status === 'misconfigured') ?? [];
+  const presentHeaders = scan?.headers.filter((header) => header.present) ?? [];
+  const rawHeaders = importantHeadersFirst(scan?.metadata?.rawHeaders ?? []);
+  const upcomingHeaders = (scan?.headers ?? []).filter((header) => upcomingHeaderNames.includes(header.name));
+
+  return (
+    <section className="wrap diagnostic-report">
+      <ReportSummary scan={scan} />
+
+      {scan ? (
+        <>
+          <ReportSection title="Headers faltantes">
+            {missingHeaders.length > 0 ? (
+              <HeaderExplanationList headers={missingHeaders} />
+            ) : (
+              <EmptyReportLine text="No se detectaron headers críticos faltantes en este diagnóstico pasivo." />
+            )}
+          </ReportSection>
+
+          <ReportSection title="Headers débiles o mal configurados">
+            {attentionHeaders.length > 0 ? (
+              <HeaderExplanationList headers={attentionHeaders} />
+            ) : (
+              <EmptyReportLine text="Los headers presentes no mostraron debilidades evidentes según las reglas actuales." />
+            )}
+          </ReportSection>
+
+          <ReportSection title="Raw headers">
+            {rawHeaders.length > 0 ? (
+              <RawHeadersTable headers={rawHeaders} httpStatus={scan.httpStatus} />
+            ) : (
+              <EmptyReportLine text="No se recibieron headers HTTP del target." />
+            )}
+          </ReportSection>
+
+          <ReportSection title="Upcoming headers">
+            <HeaderExplanationList headers={upcomingHeaders} />
+          </ReportSection>
+
+          <ReportSection title="Información adicional">
+            <AdditionalInfo scan={scan} headers={presentHeaders} />
+          </ReportSection>
+        </>
+      ) : (
+        <div className="diagnostic-empty">
+          <Radar size={34} />
+          <h2>Ejecuta un diagnóstico para generar el reporte.</h2>
+          <p>Verás grade, score, IP, headers detectados, faltantes, raw headers, DNS, SSL y recomendaciones.</p>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -277,9 +287,16 @@ function ReportSummary({ scan }: { scan: ScanResult | null }) {
                 <span>
                   {scan ? 'Not bad. Para análisis profundo de APIs, formularios y flujos, verifica el dominio.' : 'Disponible después del scan público.'}
                 </span>
-                <a className="btn btn-primary btn-sm" href="/contacto">
-                  Try Now
-                </a>
+                <div className="advanced-actions">
+                  {scan ? (
+                    <a className="btn btn-ghost btn-sm" href={`/diagnostico/report/${scan.id}`}>
+                      Ver reporte
+                    </a>
+                  ) : null}
+                  <a className="btn btn-primary btn-sm" href="/contacto">
+                    Try Now
+                  </a>
+                </div>
               </div>
             }
           />

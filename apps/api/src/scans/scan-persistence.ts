@@ -1,5 +1,6 @@
 import type { Finding, ScanResult } from '@sentinel/shared';
 import { prisma } from '../database/prisma.js';
+import { summarizeScan } from './scan-report-summary.js';
 
 const riskLevelToDb = (riskLevel: ScanResult['riskLevel']) =>
   riskLevel.toUpperCase() as 'SECURE' | 'GOOD' | 'WARNING' | 'RISKY' | 'CRITICAL';
@@ -33,6 +34,11 @@ export const persistScan = async (
         rawResult: scan,
         startedAt: new Date(scan.createdAt),
         finishedAt: new Date(scan.createdAt),
+        report: {
+          create: {
+            summary: summarizeScan(scan),
+          },
+        },
         findings: {
           create: scan.findings.map((finding) => ({
             id: finding.id,

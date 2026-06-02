@@ -123,21 +123,17 @@ Grades:
 - `A+`, `A`, `B`, `C`, `D`, `E`, `F`
 - `R` when the target could not be reached
 
-## GET /public/scans/recent
-
-Returns recent public scans that were not hidden from public results.
-
 ## GET /public/scans/:id
 
-Returns a public scan by id.
+Returns a public scan by id. The API reads from PostgreSQL when configured and falls back to in-memory storage during local development.
 
 ## GET /public/reports/:scanId
 
-Returns a structured public report summary for the demo.
+Returns a structured public report summary for the demo. Public reports are available by direct id only; Sentinel does not expose public scan listings.
 
 ## GET /scans/:id
 
-Returns a previously saved in-memory scan result.
+Returns a saved scan result. The API reads from PostgreSQL when configured and falls back to in-memory storage during local development.
 
 ## GET /reports/:scanId
 

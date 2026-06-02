@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import { ZodError } from 'zod';
 import { AppError } from '../common/errors.js';
-import { getScan } from './scan-store.js';
 import { runFreeScan } from './free-scan.service.js';
+import { getSavedScan } from './scan-repository.js';
 
 export const registerScanRoutes = async (app: FastifyInstance) => {
   app.post('/scans/free', async (request, reply) => {
@@ -23,7 +23,7 @@ export const registerScanRoutes = async (app: FastifyInstance) => {
 
   app.get('/scans/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
-    const scan = getScan(id);
+    const scan = await getSavedScan(id);
 
     if (!scan) {
       return reply.status(404).send({ error: 'Scan not found' });
@@ -32,4 +32,3 @@ export const registerScanRoutes = async (app: FastifyInstance) => {
     return scan;
   });
 };
-
