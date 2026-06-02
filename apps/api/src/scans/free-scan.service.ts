@@ -21,6 +21,9 @@ export const runFreeScan = async (
   const domain = await scanDomain(targetUrl, { followRedirects });
   const finalUrl = domain.finalUrl;
   const response = domain.response;
+  const rawHeaders = response
+    ? Array.from(response.headers.entries()).map(([name, value]) => ({ name, value }))
+    : [];
   const securityHeaders = response
     ? scanSecurityHeaders(response.headers)
     : { headers: [], findings: [] };
@@ -75,6 +78,7 @@ export const runFreeScan = async (
     metadata: {
       responseTimeMs: domain.responseTimeMs,
       redirectChain: domain.redirectChain,
+      rawHeaders,
       robotsTxt: publicResources.robotsTxt,
       sitemapXml: publicResources.sitemapXml,
     },

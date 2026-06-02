@@ -91,9 +91,16 @@ export const publicResourceResultSchema = z.object({
 });
 export type PublicResourceResult = z.infer<typeof publicResourceResultSchema>;
 
+export const rawHeaderSchema = z.object({
+  name: z.string(),
+  value: z.string(),
+});
+export type RawHeader = z.infer<typeof rawHeaderSchema>;
+
 export const passiveMetadataSchema = z.object({
   responseTimeMs: z.number().optional(),
   redirectChain: z.array(redirectHopSchema),
+  rawHeaders: z.array(rawHeaderSchema).optional(),
   robotsTxt: publicResourceResultSchema.optional(),
   sitemapXml: publicResourceResultSchema.optional(),
 });

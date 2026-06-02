@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 const navItems = [
   ['Inicio', '/'],
+  ['Diagnóstico', '/diagnostico'],
   ['Características', '/caracteristicas'],
   ['Soluciones', '/soluciones'],
   ['Sandbox', '/sandbox'],
@@ -44,7 +45,7 @@ export function SiteHeader() {
             <a className="link-login" href="/login">
               Iniciar sesión
             </a>
-            <a className="btn btn-primary btn-sm" href="/contacto">
+            <a className="btn btn-primary btn-sm" href="/diagnostico">
               Solicitar demo
             </a>
             <button
@@ -67,7 +68,7 @@ export function SiteHeader() {
         <a href="/login" onClick={() => setMenuOpen(false)}>
           Iniciar sesión
         </a>
-        <a className="btn btn-primary" href="/contacto" onClick={() => setMenuOpen(false)}>
+        <a className="btn btn-primary" href="/diagnostico" onClick={() => setMenuOpen(false)}>
           Solicitar demo
         </a>
       </div>
@@ -92,6 +93,7 @@ export function SiteFooter() {
           </div>
           <FooterColumn
             items={[
+              ['Diagnóstico', '/diagnostico'],
               ['Características', '/caracteristicas'],
               ['Sandbox Visual', '/sandbox'],
               ['Precios', '/precios'],
@@ -141,7 +143,7 @@ export function StubPage({ description, eyebrow = 'En construcción', items, tit
             ))}
           </ul>
           <div className="stub-cta">
-            <a className="btn btn-primary btn-lg" href="/contacto">
+            <a className="btn btn-primary btn-lg" href="/diagnostico">
               Solicitar demo
             </a>
             <a className="btn btn-ghost btn-lg" href="/">
@@ -208,4 +210,3 @@ function FooterColumn({ items, title }: { items: Array<[string, string]>; title:
     </div>
   );
 }
-

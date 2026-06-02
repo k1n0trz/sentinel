@@ -2,6 +2,7 @@ import type { NextConfig } from 'next';
 
 const legacyHtmlPages = [
   ['index', '/'],
+  ['diagnostico', '/diagnostico'],
   ['caracteristicas', '/caracteristicas'],
   ['soluciones', '/soluciones'],
   ['sandbox', '/sandbox'],

@@ -1,6 +1,5 @@
 'use client';
 
-import type { ScanResult } from '@sentinel/shared';
 import {
   AlertTriangle,
   BarChart3,
@@ -22,11 +21,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { runFreeScan } from '../lib/api';
 import { EyeLogo } from './site-shell';
 
 const navItems = [
   ['Inicio', '/'],
+  ['Diagnóstico', '/diagnostico'],
   ['Características', '/caracteristicas'],
   ['Soluciones', '/soluciones'],
   ['Sandbox', '/sandbox'],
@@ -110,36 +109,30 @@ const plans = [
   },
 ];
 
-const severityOrder = ['critical', 'high', 'medium', 'low', 'info'] as const;
-
 export function SentinelHome() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [url, setUrl] = useState('example.com');
   const [followRedirects, setFollowRedirects] = useState(true);
   const [hideFromPublicResults, setHideFromPublicResults] = useState(false);
-  const [scan, setScan] = useState<ScanResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
 
-  const runScan = async (event: React.FormEvent<HTMLFormElement>) => {
+  const diagnosticHref = (() => {
+    const params = new URLSearchParams();
+    const target = url.trim();
+
+    if (target) params.set('target', target);
+    if (!followRedirects) params.set('followRedirects', 'false');
+    if (hideFromPublicResults) params.set('hideFromPublicResults', 'true');
+
+    const query = params.toString();
+    return query ? `/diagnostico?${query}` : '/diagnostico';
+  })();
+
+  const openDiagnostic = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null);
-    setIsScanning(true);
-
-    try {
-      setScan(await runFreeScan({ followRedirects, hideFromPublicResults, url }));
-    } catch (scanError) {
-      setError(scanError instanceof Error ? scanError.message : 'No se pudo ejecutar el diagnóstico.');
-    } finally {
-      setIsScanning(false);
-    }
+    window.location.href = diagnosticHref;
   };
 
-  const visibleFindings =
-    scan?.findings
-      .slice()
-      .sort((left, right) => severityOrder.indexOf(left.severity) - severityOrder.indexOf(right.severity))
-      .slice(0, 5) ?? [];
+  const demoHref = '/diagnostico';
 
   return (
     <>
@@ -160,7 +153,7 @@ export function SentinelHome() {
             <a className="link-login" href="/login">
               Iniciar sesión
             </a>
-            <a className="btn btn-primary btn-sm" href="/contacto">
+            <a className="btn btn-primary btn-sm" href={demoHref}>
               Solicitar demo
             </a>
             <button
@@ -181,7 +174,7 @@ export function SentinelHome() {
             {label}
           </a>
         ))}
-        <a className="btn btn-primary" href="/contacto" onClick={() => setMenuOpen(false)}>
+        <a className="btn btn-primary" href={demoHref} onClick={() => setMenuOpen(false)}>
           Solicitar demo
         </a>
       </div>
@@ -200,7 +193,7 @@ export function SentinelHome() {
               para detectar riesgos antes de que se conviertan en incidentes.
             </p>
             <div className="hero-cta">
-              <a className="btn btn-primary btn-lg" href="#demo">
+              <a className="btn btn-primary btn-lg" href={demoHref}>
                 Probar diagnóstico
               </a>
               <a className="btn btn-ghost btn-lg" href="#como">
@@ -233,7 +226,7 @@ export function SentinelHome() {
                 Este diagnóstico público ejecuta checks pasivos o de bajo impacto: redirecciones, HTTPS, headers, SSL,
                 DNS básico, robots.txt, sitemap.xml, score y recomendaciones accionables.
               </p>
-              <form className="scan-form" onSubmit={(event) => void runScan(event)}>
+              <form className="scan-form" onSubmit={openDiagnostic}>
                 <label className="sr-only" htmlFor="scan-url">
                   URL para analizar
                 </label>
@@ -246,9 +239,9 @@ export function SentinelHome() {
                   type="text"
                   value={url}
                 />
-                <button className="btn btn-primary" disabled={isScanning} type="submit">
+                <button className="btn btn-primary" type="submit">
                   <Terminal size={18} />
-                  {isScanning ? 'Analizando' : 'Scan now'}
+                  Scan now
                 </button>
               </form>
               <div className="scan-options">
@@ -269,52 +262,41 @@ export function SentinelHome() {
                   Ocultar de resultados públicos
                 </label>
               </div>
-              {error ? <div className="error-note">{error}</div> : null}
             </div>
 
             <div className="scan-result">
               <div className="scan-result-head">
                 <div>
                   <div className="scan-result-title">Live public report</div>
-                  <div className="scan-url">{scan?.finalUrl ?? 'Esperando diagnóstico'}</div>
+                  <div className="scan-url">Disponible en /diagnostico</div>
                 </div>
-                <div className="grade">{scan?.grade ?? '--'}</div>
+                <div className="grade">--</div>
               </div>
               <div className="result-grid">
-                <Metric label="Score" value={scan ? `${scan.score}/100` : '--'} />
-                <Metric label="Risk" value={scan?.riskLevel ?? '--'} />
-                <Metric label="HTTP" value={scan?.httpStatus ? `${scan.httpStatus}` : '--'} />
-                <Metric label="Latency" value={scan?.metadata?.responseTimeMs ? `${scan.metadata.responseTimeMs}ms` : '--'} />
+                <Metric label="Score" value="0-100" />
+                <Metric label="Risk" value="Contextual" />
+                <Metric label="HTTP" value="Status" />
+                <Metric label="Latency" value="ms" />
               </div>
               <div className="finding-list">
-                {visibleFindings.map((finding) => (
-                  <article className="finding" key={finding.id}>
-                    <div className="finding-top">
-                      <h4>{finding.title}</h4>
-                      <span className="severity">{finding.severity}</span>
-                    </div>
-                    <p>{finding.recommendation}</p>
-                  </article>
-                ))}
-                {scan && scan.findings.length === 0 ? (
-                  <article className="finding">
-                    <div className="finding-top">
-                      <h4>No se detectaron hallazgos en el diagnóstico pasivo.</h4>
-                      <span className="severity">ok</span>
-                    </div>
-                    <p>El resultado inicial luce saludable. Los scans avanzados requieren dominio verificado.</p>
-                  </article>
-                ) : null}
-                {!scan ? (
-                  <article className="finding">
-                    <div className="finding-top">
-                      <h4>El resultado aparecerá aquí</h4>
-                      <span className="severity">demo</span>
-                    </div>
-                    <p>Obtendrás grade, score, headers, SSL, DNS, redirects y recomendaciones claras.</p>
-                  </article>
-                ) : null}
+                <article className="finding">
+                  <div className="finding-top">
+                    <h4>Reporte completo en una pantalla dedicada</h4>
+                    <span className="severity">demo</span>
+                  </div>
+                  <p>Haz clic en Scan now para abrir Diagnóstico con el dominio precargado y ejecutar el análisis.</p>
+                </article>
+                <article className="finding">
+                  <div className="finding-top">
+                    <h4>Headers, SSL, DNS y raw headers</h4>
+                    <span className="severity">public</span>
+                  </div>
+                  <p>El reporte incluye resumen, headers faltantes, headers débiles, respuesta cruda y recomendaciones.</p>
+                </article>
               </div>
+              <a className="btn btn-ghost btn-sm" href={diagnosticHref} style={{ marginTop: 16 }}>
+                Abrir Diagnóstico
+              </a>
             </div>
           </div>
         </section>
@@ -413,7 +395,7 @@ export function SentinelHome() {
                   </li>
                 ))}
               </ul>
-              <a className="btn btn-primary" href="#demo">
+              <a className="btn btn-primary" href={demoHref}>
                 Probar demo seguro
               </a>
             </div>
@@ -522,7 +504,7 @@ export function SentinelHome() {
                 </p>
               </div>
               <div className="hero-cta" style={{ margin: 0 }}>
-                <a className="btn btn-primary btn-lg" href="/contacto">
+                <a className="btn btn-primary btn-lg" href={demoHref}>
                   Solicitar demo
                 </a>
                 <a className="btn btn-ghost btn-lg" href="/precios">
@@ -883,6 +865,7 @@ function Footer() {
           </div>
           <FooterColumn
             items={[
+              ['Diagnóstico', '/diagnostico'],
               ['Características', '/caracteristicas'],
               ['Sandbox Visual', '/sandbox'],
               ['Precios', '/precios'],
