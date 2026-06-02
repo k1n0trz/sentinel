@@ -21,7 +21,6 @@ Acciones:
 - Agregar response time.
 - Agregar canonical URL.
 - Agregar robots.txt y sitemap.xml.
-- Agregar public results list.
 - Agregar rate limit por IP y dominio.
 
 Entregable:
@@ -131,4 +130,3 @@ Acciones:
 Entregable:
 
 - Reporte IA listo para cliente y desarrollador.
-

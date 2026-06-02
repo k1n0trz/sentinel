@@ -79,7 +79,6 @@ Acciones:
 - Agregar grading tipo A+, A, B, C, D, E, F, R junto al score 0-100.
 - Agregar robots.txt y sitemap.xml como checks pasivos.
 - Agregar deteccion basica de tecnologias visibles con baja confianza: Cloudflare, Vercel, Netlify, Nginx, Apache, Next.js, WordPress.
-- Agregar tabla de recientes, hall of fame y hall of shame solo para resultados publicos no ocultos.
 - Agregar endpoint publico de reporte compartible.
 - Agregar proteccion contra abuso: rate limit por IP, user agent, dominio y ventana temporal.
 
@@ -87,7 +86,7 @@ Criterios de prueba:
 
 - Un visitante puede escanear un dominio y obtener score, grade, findings y recomendaciones.
 - El scan no ejecuta payloads ofensivos.
-- El resultado puede ocultarse de listados publicos.
+- El resultado no aparece en listados publicos; solo queda disponible por link de reporte y politica de retencion.
 - El sistema explica por que falta cada header y como corregirlo.
 
 ## Fase 2: Persistencia y SaaS Base
@@ -317,4 +316,3 @@ Criterios de prueba del super agente:
 - Si `apps/web` sera reemplazada por el frontend de Claude o quedara como app shell.
 - Politica de retencion para scans publicos.
 - Licencia privada o propietaria.
-
