@@ -1,6 +1,6 @@
 # Sentinel API
 
-Base URL in development: `http://localhost:4000`
+Base URL in development: `http://localhost:4100`
 
 ## GET /health
 
@@ -60,4 +60,3 @@ Returns a previously saved in-memory scan result.
 ## GET /reports/:scanId
 
 Returns a structured report summary for a scan.
-

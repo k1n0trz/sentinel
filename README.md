@@ -30,9 +30,9 @@ pnpm db:generate
 pnpm dev
 ```
 
-Web: http://localhost:3000
+Web: http://localhost:3100
 
-API: http://localhost:4000
+API: http://localhost:4100
 
 ## Commands
 
@@ -55,4 +55,3 @@ See `.env.example` for required variables. Do not commit secrets.
 - Passive scanner: initial implementation
 - Verified domains and deep scans: planned
 - AI analysis, visual sandbox, and continuous monitoring: planned
-

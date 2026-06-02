@@ -1,6 +1,6 @@
 import { scanResultSchema, type FreeScanRequest, type ScanResult } from '@sentinel/shared';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4100';
 
 export const runFreeScan = async (payload: FreeScanRequest): Promise<ScanResult> => {
   const response = await fetch(`${apiUrl}/scans/free`, {
@@ -21,4 +21,3 @@ export const runFreeScan = async (payload: FreeScanRequest): Promise<ScanResult>
 
   return scanResultSchema.parse(data);
 };
-
