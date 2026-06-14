@@ -1,26 +1,57 @@
 import { z } from 'zod';
 
-export const severitySchema = z.enum(['critical', 'high', 'medium', 'low', 'info']);
+export const severitySchema = z.enum([
+  'critical',
+  'high',
+  'medium',
+  'low',
+  'info',
+]);
 export type Severity = z.infer<typeof severitySchema>;
 
-export const riskLevelSchema = z.enum(['Secure', 'Good', 'Warning', 'Risky', 'Critical']);
+export const riskLevelSchema = z.enum([
+  'Secure',
+  'Good',
+  'Warning',
+  'Risky',
+  'Critical',
+]);
 export type RiskLevel = z.infer<typeof riskLevelSchema>;
 
-export const scanStatusSchema = z.enum(['queued', 'running', 'completed', 'failed']);
+export const scanStatusSchema = z.enum([
+  'queued',
+  'running',
+  'completed',
+  'failed',
+]);
 export type ScanStatus = z.infer<typeof scanStatusSchema>;
 
-export const scanGradeSchema = z.enum(['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'R']);
+export const scanGradeSchema = z.enum([
+  'A+',
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'R',
+]);
 export type ScanGrade = z.infer<typeof scanGradeSchema>;
 
 const allowedScanProtocols = new Set(['http:', 'https:']);
 
-const hasExplicitProtocol = (value: string) => /^[a-z][a-z\d+.-]*:\/\//i.test(value);
+const hasExplicitProtocol = (value: string) =>
+  /^[a-z][a-z\d+.-]*:\/\//i.test(value);
 
 const isSupportedScanTarget = (value: string) => {
   try {
-    const parsed = new URL(hasExplicitProtocol(value) ? value : `https://${value}`);
+    const parsed = new URL(
+      hasExplicitProtocol(value) ? value : `https://${value}`,
+    );
 
-    return allowedScanProtocols.has(parsed.protocol) && parsed.hostname.length > 0;
+    return (
+      allowedScanProtocols.has(parsed.protocol) && parsed.hostname.length > 0
+    );
   } catch {
     return false;
   }
@@ -45,7 +76,12 @@ export const findingSchema = z.object({
 });
 export type Finding = z.infer<typeof findingSchema>;
 
-export const securityHeaderStatusSchema = z.enum(['present', 'missing', 'weak', 'misconfigured']);
+export const securityHeaderStatusSchema = z.enum([
+  'present',
+  'missing',
+  'weak',
+  'misconfigured',
+]);
 export type SecurityHeaderStatus = z.infer<typeof securityHeaderStatusSchema>;
 
 export const securityHeaderResultSchema = z.object({
@@ -125,6 +161,49 @@ export const scanResultSchema = z.object({
 });
 export type ScanResult = z.infer<typeof scanResultSchema>;
 
+export const findingsBySeveritySchema = z
+  .object({
+    critical: z.number().optional(),
+    high: z.number().optional(),
+    medium: z.number().optional(),
+    low: z.number().optional(),
+    info: z.number().optional(),
+  })
+  .strict();
+
+export const reportFindingHighlightSchema = findingSchema.pick({
+  title: true,
+  severity: true,
+  category: true,
+  recommendation: true,
+});
+export type ReportFindingHighlight = z.infer<
+  typeof reportFindingHighlightSchema
+>;
+
+export const scanReportSummarySchema = z.object({
+  score: z.number().min(0).max(100),
+  grade: scanGradeSchema,
+  riskLevel: riskLevelSchema,
+  responseTimeMs: z.number().optional(),
+  redirectHops: z.number(),
+  totalFindings: z.number(),
+  highestSeverity: severitySchema.optional(),
+  findingsBySeverity: findingsBySeveritySchema,
+  topFindings: z.array(reportFindingHighlightSchema),
+  executiveSummary: z.string(),
+  technicalSummary: z.string(),
+  recommendedNextActions: z.array(z.string()),
+});
+export type ScanReportSummary = z.infer<typeof scanReportSummarySchema>;
+
+export const publicReportSchema = z.object({
+  public: z.boolean(),
+  scan: scanResultSchema,
+  summary: scanReportSummarySchema,
+});
+export type PublicReport = z.infer<typeof publicReportSchema>;
+
 export const scoreToRiskLevel = (score: number): RiskLevel => {
   if (score >= 90) return 'Secure';
   if (score >= 75) return 'Good';
@@ -133,7 +212,10 @@ export const scoreToRiskLevel = (score: number): RiskLevel => {
   return 'Critical';
 };
 
-export const scoreToGrade = (score: number, hasHttpFailure = false): ScanGrade => {
+export const scoreToGrade = (
+  score: number,
+  hasHttpFailure = false,
+): ScanGrade => {
   if (hasHttpFailure) return 'R';
   if (score >= 97) return 'A+';
   if (score >= 90) return 'A';

@@ -1,6 +1,7 @@
 import type { Finding, RedirectHop } from '@sentinel/shared';
 import { nanoid } from 'nanoid';
 import { AppError } from '../common/errors.js';
+import { assertPublicScanTarget } from '../common/public-target.js';
 import { normalizeTargetUrl } from '../common/url.js';
 
 const redirectStatuses = new Set([301, 302, 303, 307, 308]);
@@ -30,6 +31,8 @@ export const scanDomain = async (
   let response: Response | undefined;
 
   for (let attempt = 0; attempt <= maxRedirects; attempt += 1) {
+    await assertPublicScanTarget(currentUrl);
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
 
@@ -47,8 +50,12 @@ export const scanDomain = async (
         title: 'HTTP request failed',
         severity: 'medium',
         category: 'domain',
-        description: error instanceof Error ? error.message : 'The target could not be reached.',
-        recommendation: 'Confirm the target is publicly reachable and accepts standard HTTP requests.',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'The target could not be reached.',
+        recommendation:
+          'Confirm the target is publicly reachable and accepts standard HTTP requests.',
       });
 
       return {
@@ -79,7 +86,9 @@ export const scanDomain = async (
       break;
     }
 
-    const nextUrl = normalizeTargetUrl(new URL(location, currentUrl).toString());
+    const nextUrl = normalizeTargetUrl(
+      new URL(location, currentUrl).toString(),
+    );
 
     redirectChain.push({
       from: currentUrl.toString(),
@@ -101,7 +110,8 @@ export const scanDomain = async (
       severity: response.status >= 500 ? 'medium' : 'low',
       category: 'domain',
       description: `The target returned HTTP ${response.status}.`,
-      recommendation: 'Review application availability and expected response behavior.',
+      recommendation:
+        'Review application availability and expected response behavior.',
     });
   }
 
@@ -111,8 +121,10 @@ export const scanDomain = async (
       title: 'HTTP does not redirect to HTTPS',
       severity: 'high',
       category: 'domain',
-      description: 'The initial HTTP URL did not end on an HTTPS URL during this passive scan.',
-      recommendation: 'Force HTTP to HTTPS redirects at the edge or web server.',
+      description:
+        'The initial HTTP URL did not end on an HTTPS URL during this passive scan.',
+      recommendation:
+        'Force HTTP to HTTPS redirects at the edge or web server.',
     });
   }
 
@@ -123,7 +135,8 @@ export const scanDomain = async (
       severity: 'low',
       category: 'domain',
       description: `The target required ${redirectChain.length} redirect hop(s).`,
-      recommendation: 'Reduce redirect hops to improve performance and reduce configuration drift.',
+      recommendation:
+        'Reduce redirect hops to improve performance and reduce configuration drift.',
     });
   }
 
@@ -136,4 +149,3 @@ export const scanDomain = async (
     findings,
   };
 };
-

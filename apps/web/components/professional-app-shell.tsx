@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Workflow,
 } from 'lucide-react';
+import { SignOutButton } from './sign-out-button';
 
 export type ProfessionalAppView = 'domains' | 'integrations' | 'overview' | 'projects' | 'reports' | 'scans';
 
@@ -110,6 +111,7 @@ export function ProfessionalAppPage({ view }: { view: ProfessionalAppView }) {
             <a className="btn btn-primary btn-sm" href="/app/dominios">
               Agregar dominio
             </a>
+            <SignOutButton />
           </div>
         </header>
 
