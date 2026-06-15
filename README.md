@@ -27,6 +27,7 @@ pnpm install
 cp .env.example .env
 docker compose up -d
 pnpm db:generate
+pnpm db:migrate
 pnpm dev
 ```
 
@@ -48,6 +49,7 @@ pnpm db:migrate
 ## Environment
 
 See `.env.example` for required variables. Do not commit secrets.
+If another local service already uses Postgres or Redis defaults, set `POSTGRES_PORT` or `REDIS_PORT` before running Docker Compose and adjust `DATABASE_URL` or `REDIS_URL` accordingly.
 
 ## Roadmap Status
 

@@ -1,5 +1,11 @@
-import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+
+import { LoginForm } from '../../components/login-form';
 
 export default function LoginPage() {
-  redirect('/app');
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
 }

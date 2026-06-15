@@ -1,17 +1,42 @@
 import type { FastifyInstance } from 'fastify';
+import { freeScanRequestSchema } from '@sentinel/shared';
 import { ZodError } from 'zod';
 import { AppError } from '../common/errors.js';
+import { normalizeTargetUrl } from '../common/url.js';
+import { env } from '../config/env.js';
 import { runFreeScan } from '../scans/free-scan.service.js';
-import { getSavedScan } from '../scans/scan-repository.js';
-import { summarizeScan } from '../scans/scan-report-summary.js';
+import { getSavedReport, getSavedScan } from '../scans/scan-repository.js';
+import { createDomainRateLimiter } from './domain-rate-limit.js';
+
+const publicScanDomainLimiter = createDomainRateLimiter({
+  max: env.FREE_SCAN_DOMAIN_RATE_LIMIT_MAX,
+  windowMs: env.FREE_SCAN_DOMAIN_RATE_LIMIT_WINDOW_MS,
+});
 
 export const registerPublicRoutes = async (app: FastifyInstance) => {
   app.post('/public/scans', async (request, reply) => {
     try {
-      return await runFreeScan(request.body, { public: true });
+      const scanRequest = freeScanRequestSchema.parse(request.body);
+      const domainLimit = publicScanDomainLimiter.consume(
+        normalizeTargetUrl(scanRequest.url),
+      );
+
+      if (!domainLimit.allowed) {
+        return reply
+          .status(429)
+          .header('Retry-After', Math.ceil(domainLimit.retryAfterMs / 1000))
+          .send({
+            error: 'Too many scans requested for this domain. Try again later.',
+            retryAfterMs: domainLimit.retryAfterMs,
+          });
+      }
+
+      return await runFreeScan(scanRequest, { public: true });
     } catch (error) {
       if (error instanceof ZodError) {
-        return reply.status(400).send({ error: 'Invalid public scan request', issues: error.issues });
+        return reply
+          .status(400)
+          .send({ error: 'Invalid public scan request', issues: error.issues });
       }
 
       if (error instanceof AppError) {
@@ -35,16 +60,15 @@ export const registerPublicRoutes = async (app: FastifyInstance) => {
 
   app.get('/public/reports/:scanId', async (request, reply) => {
     const { scanId } = request.params as { scanId: string };
-    const scan = await getSavedScan(scanId, { publicOnly: true });
+    const report = await getSavedReport(scanId, { publicOnly: true });
 
-    if (!scan) {
+    if (!report) {
       return reply.status(404).send({ error: 'Scan not found' });
     }
 
     return {
-      scan,
+      ...report,
       public: true,
-      summary: summarizeScan(scan),
     };
   });
 };

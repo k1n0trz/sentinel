@@ -2,8 +2,10 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import Fastify from 'fastify';
+import { AppError } from './common/errors.js';
 import { env } from './config/env.js';
 import { registerHealthRoutes } from './health/health.routes.js';
+import { registerInternalRoutes } from './internal/internal.routes.js';
 import { registerPublicRoutes } from './public/public.routes.js';
 import { registerReportRoutes } from './reports/reports.routes.js';
 import { registerScanRoutes } from './scans/scans.routes.js';
@@ -24,7 +26,16 @@ export const buildApp = async () => {
     timeWindow: env.FREE_SCAN_RATE_LIMIT_WINDOW,
   });
 
+  app.setErrorHandler((error, _request, reply) => {
+    if (error instanceof AppError) {
+      return reply.status(error.statusCode).send({ error: error.message });
+    }
+
+    return reply.send(error);
+  });
+
   await registerHealthRoutes(app);
+  await registerInternalRoutes(app);
   await registerPublicRoutes(app);
   await registerScanRoutes(app);
   await registerReportRoutes(app);

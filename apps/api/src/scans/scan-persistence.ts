@@ -1,9 +1,28 @@
 import type { Finding, ScanResult } from '@sentinel/shared';
+import { AppError } from '../common/errors.js';
 import { prisma } from '../database/prisma.js';
 import { summarizeScan } from './scan-report-summary.js';
 
+type ScanCreateArgs = Parameters<typeof prisma.scan.create>[0];
+
+export type ScanPersistenceClient = {
+  scan: {
+    create: (args: ScanCreateArgs) => Promise<unknown>;
+  };
+};
+
+type PersistScanDependencies = {
+  client?: ScanPersistenceClient;
+  databaseUrl?: string;
+};
+
 const riskLevelToDb = (riskLevel: ScanResult['riskLevel']) =>
-  riskLevel.toUpperCase() as 'SECURE' | 'GOOD' | 'WARNING' | 'RISKY' | 'CRITICAL';
+  riskLevel.toUpperCase() as
+    | 'SECURE'
+    | 'GOOD'
+    | 'WARNING'
+    | 'RISKY'
+    | 'CRITICAL';
 
 const severityToDb = (severity: Finding['severity']) =>
   severity.toUpperCase() as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
@@ -11,13 +30,19 @@ const severityToDb = (severity: Finding['severity']) =>
 export const persistScan = async (
   scan: ScanResult,
   options: { public: boolean; hiddenFromPublicResults: boolean },
+  dependencies: PersistScanDependencies = {},
 ) => {
-  if (!process.env.DATABASE_URL) {
+  const databaseUrl = dependencies.databaseUrl ?? process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
     return;
   }
 
+  const client = dependencies.client ?? prisma;
+  const reportSummary = summarizeScan(scan);
+
   try {
-    await prisma.scan.create({
+    await client.scan.create({
       data: {
         id: scan.id,
         targetUrl: scan.targetUrl,
@@ -36,7 +61,9 @@ export const persistScan = async (
         finishedAt: new Date(scan.createdAt),
         report: {
           create: {
-            summary: summarizeScan(scan),
+            summary: reportSummary,
+            executiveSummary: reportSummary.executiveSummary,
+            technicalSummary: reportSummary.technicalSummary,
           },
         },
         findings: {
@@ -51,7 +78,12 @@ export const persistScan = async (
         },
       },
     });
-  } catch {
-    // Local development can run without PostgreSQL; in-memory scan storage remains the fallback.
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error
+        ? `Scan persistence is unavailable: ${error.message}`
+        : 'Scan persistence is unavailable.',
+      503,
+    );
   }
 };

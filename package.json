@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev --parallel",
@@ -12,6 +15,7 @@
     "format:check": "prettier --check .",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "test": "turbo test"
   },
   "devDependencies": {
