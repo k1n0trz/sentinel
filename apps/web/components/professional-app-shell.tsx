@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Workflow,
 } from 'lucide-react';
+import { PrivateScanHistory } from './private-scan-history';
 import { SignOutButton } from './sign-out-button';
 
 export type ProfessionalAppView = 'domains' | 'integrations' | 'overview' | 'projects' | 'reports' | 'scans';
@@ -57,13 +58,6 @@ const domains = [
   ['app.sentinelcloud.dev', 'Pendiente DNS TXT', 'B', 'Falta HSTS preload', 'Hace 1 h'],
   ['checkout-demo.com', 'Verificado', 'C', 'CSP debil', 'Ayer'],
   ['woocommerce-client.com', 'Verificado', 'B', 'XML-RPC expuesto', 'Ayer'],
-] as const;
-
-const scans = [
-  ['Headers + SSL', 'sentinelcloud.dev', 'completed', 'A', '18 hallazgos revisados'],
-  ['Sandbox visual', 'checkout-demo.com', 'queued', '-', 'Home + checkout'],
-  ['WooCommerce Guardian', 'woocommerce-client.com', 'completed', 'B', '4 recomendaciones'],
-  ['DNS avanzado', 'app.sentinelcloud.dev', 'running', '-', 'SPF, DKIM, DMARC'],
 ] as const;
 
 const integrations = [
@@ -215,25 +209,8 @@ function DomainsView() {
 
 function ScansView() {
   return (
-    <Panel title="Cola de scans">
-      <div className="app-table">
-        <div className="app-table-row head">
-          <span>Modulo</span>
-          <span>Dominio</span>
-          <span>Estado</span>
-          <span>Grade</span>
-          <span>Detalle</span>
-        </div>
-        {scans.map(([module, domain, status, grade, detail]) => (
-          <div className="app-table-row" key={`${module}-${domain}`}>
-            <strong>{module}</strong>
-            <span>{domain}</span>
-            <span>{status}</span>
-            <span>{grade}</span>
-            <span>{detail}</span>
-          </div>
-        ))}
-      </div>
+    <Panel title="Historial de scans">
+      <PrivateScanHistory />
     </Panel>
   );
 }

@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import type { ScanResult } from '@sentinel/shared';
 import { AppError } from '../common/errors.js';
-import { getSavedReport, getSavedScan } from './scan-repository.js';
+import {
+  getRecentSavedScans,
+  getSavedReport,
+  getSavedScan,
+} from './scan-repository.js';
 
 const scan: ScanResult = {
   id: 'scan_persisted_test',
@@ -238,5 +242,97 @@ describe('getSavedReport', () => {
         error.statusCode === 503 &&
         error.message.includes('report summary'),
     );
+  });
+});
+
+describe('getRecentSavedScans', () => {
+  it('reads recent persisted scan summaries in reverse chronological order', async () => {
+    let query: unknown;
+    const client = {
+      scan: {
+        findFirst: async () => null,
+        findMany: async (args: unknown) => {
+          query = args;
+          return [
+            {
+              id: 'scan_recent_test',
+              targetUrl: 'https://example.com/',
+              finalUrl: 'https://example.com/',
+              status: 'COMPLETED',
+              score: 88,
+              grade: 'B',
+              riskLevel: 'GOOD',
+              httpStatus: 200,
+              responseTimeMs: 45,
+              public: true,
+              hiddenFromPublicResults: true,
+              createdAt: new Date('2026-06-15T01:10:37.156Z'),
+            },
+          ];
+        },
+      },
+    };
+
+    assert.deepEqual(
+      await getRecentSavedScans({
+        client,
+        databaseUrl: 'postgresql://sentinel:sentinel@localhost:5432/sentinel',
+      }),
+      [
+        {
+          id: 'scan_recent_test',
+          targetUrl: 'https://example.com/',
+          finalUrl: 'https://example.com/',
+          status: 'completed',
+          score: 88,
+          grade: 'B',
+          riskLevel: 'Good',
+          httpStatus: 200,
+          responseTimeMs: 45,
+          public: true,
+          hiddenFromPublicResults: true,
+          createdAt: '2026-06-15T01:10:37.156Z',
+        },
+      ],
+    );
+    assert.deepEqual(query, {
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        createdAt: true,
+        finalUrl: true,
+        grade: true,
+        hiddenFromPublicResults: true,
+        httpStatus: true,
+        id: true,
+        public: true,
+        responseTimeMs: true,
+        riskLevel: true,
+        score: true,
+        status: true,
+        targetUrl: true,
+      },
+      take: 20,
+    });
+  });
+
+  it('returns an empty list when DATABASE_URL is not configured', async () => {
+    let called = false;
+    const client = {
+      scan: {
+        findFirst: async () => null,
+        findMany: async () => {
+          called = true;
+          return [];
+        },
+      },
+    };
+
+    assert.deepEqual(
+      await getRecentSavedScans({ client, databaseUrl: undefined }),
+      [],
+    );
+    assert.equal(called, false);
   });
 });

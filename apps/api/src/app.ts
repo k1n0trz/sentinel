@@ -5,6 +5,7 @@ import Fastify from 'fastify';
 import { AppError } from './common/errors.js';
 import { env } from './config/env.js';
 import { registerHealthRoutes } from './health/health.routes.js';
+import { registerInternalRoutes } from './internal/internal.routes.js';
 import { registerPublicRoutes } from './public/public.routes.js';
 import { registerReportRoutes } from './reports/reports.routes.js';
 import { registerScanRoutes } from './scans/scans.routes.js';
@@ -34,6 +35,7 @@ export const buildApp = async () => {
   });
 
   await registerHealthRoutes(app);
+  await registerInternalRoutes(app);
   await registerPublicRoutes(app);
   await registerScanRoutes(app);
   await registerReportRoutes(app);

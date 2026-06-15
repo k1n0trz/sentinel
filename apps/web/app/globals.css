@@ -2170,6 +2170,24 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.app-table-link {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.app-table-link:hover {
+  background: rgba(0, 163, 255, 0.06);
+}
+
+.app-error {
+  margin: 0;
+  padding: 16px 18px;
+  color: var(--red);
+}
+
 .app-card {
   display: grid;
   gap: 12px;

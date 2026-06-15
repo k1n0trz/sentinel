@@ -54,3 +54,20 @@ test('email verification links return users to the app login', () => {
   assert.match(source, /app\.sentinelcloud\.dev/);
   assert.match(source, /sendEmailVerification\([^,]+,\s*emailVerificationActionSettings/);
 });
+
+test('private scan history proxy requires a Sentinel session and internal API key', () => {
+  assert.equal(exists('./api/app/scans/recent/route.ts'), true);
+
+  const source = read('./api/app/scans/recent/route.ts');
+
+  assert.match(source, /requireCurrentUser/);
+  assert.match(source, /SENTINEL_INTERNAL_API_KEY/);
+  assert.match(source, /x-sentinel-internal-key/);
+});
+
+test('private scans view renders authenticated persisted scan history', () => {
+  const shell = read('../components/professional-app-shell.tsx');
+
+  assert.match(shell, /PrivateScanHistory/);
+  assert.doesNotMatch(shell, /const scans = \[/);
+});

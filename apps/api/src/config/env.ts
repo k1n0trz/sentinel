@@ -21,6 +21,7 @@ const envSchema = z.object({
     .default('development'),
   PORT: z.coerce.number().int().positive().optional(),
   REDIS_URL: z.string().url().optional(),
+  SENTINEL_INTERNAL_API_KEY: z.string().min(16).optional(),
 });
 
 export const parseEnv = (source: NodeJS.ProcessEnv) => {
