@@ -6,7 +6,7 @@ const PUBLIC_FILE = /\.(.*)$/;
 function isAllowedAppSubdomainPath(pathname: string) {
   return (
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/api/session') ||
+    pathname.startsWith('/api/') ||
     pathname.startsWith('/app') ||
     pathname.startsWith('/login') ||
     pathname === '/favicon.ico' ||

@@ -45,6 +45,7 @@ test('middleware routes app subdomain traffic into the private app', () => {
 
   assert.match(source, /app\.sentinelcloud\.dev/);
   assert.match(source, /\/app/);
+  assert.match(source, /pathname\.startsWith\('\/api\/'\)/);
 });
 
 test('email verification links return users to the app login', () => {
