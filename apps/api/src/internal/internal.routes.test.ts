@@ -68,4 +68,127 @@ describe('registerInternalRoutes', () => {
       ],
     });
   });
+
+  it('returns user domains when the internal key and user headers match', async () => {
+    const app = Fastify();
+
+    await registerInternalRoutes(app, {
+      getRecentScans: async () => [],
+      internalApiKey: 'test-internal-key',
+      listDomains: async (owner) => [
+        {
+          id: 'domain_1',
+          hostname: owner.email,
+          verified: false,
+          verificationMethod: 'dns-txt',
+          verificationToken: 'sentinel-verify=test',
+          createdAt: '2026-06-15T01:00:00.000Z',
+        },
+      ],
+    });
+
+    const response = await app.inject({
+      headers: {
+        'x-sentinel-internal-key': 'test-internal-key',
+        'x-sentinel-user-email': 'owner@example.com',
+        'x-sentinel-user-name': 'Owner Example',
+      },
+      url: '/internal/domains',
+    });
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.json(), {
+      domains: [
+        {
+          id: 'domain_1',
+          hostname: 'owner@example.com',
+          verified: false,
+          verificationMethod: 'dns-txt',
+          verificationToken: 'sentinel-verify=test',
+          createdAt: '2026-06-15T01:00:00.000Z',
+        },
+      ],
+    });
+  });
+
+  it('returns user projects when the internal key and user headers match', async () => {
+    const app = Fastify();
+
+    await registerInternalRoutes(app, {
+      getRecentScans: async () => [],
+      internalApiKey: 'test-internal-key',
+      listProjects: async (owner) => [
+        {
+          id: 'project_1',
+          name: owner.email,
+          domainCount: 2,
+          averageScore: 90,
+          createdAt: '2026-06-15T01:00:00.000Z',
+        },
+      ],
+    });
+
+    const response = await app.inject({
+      headers: {
+        'x-sentinel-internal-key': 'test-internal-key',
+        'x-sentinel-user-email': 'owner@example.com',
+      },
+      url: '/internal/projects',
+    });
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.json(), {
+      projects: [
+        {
+          id: 'project_1',
+          name: 'owner@example.com',
+          domainCount: 2,
+          averageScore: 90,
+          createdAt: '2026-06-15T01:00:00.000Z',
+        },
+      ],
+    });
+  });
+
+  it('creates domains for the authenticated user through the internal API', async () => {
+    const app = Fastify();
+
+    await registerInternalRoutes(app, {
+      createDomain: async (owner, hostname) => ({
+        id: 'domain_1',
+        hostname: `${hostname}:${owner.email}`,
+        verified: false,
+        verificationMethod: 'dns-txt',
+        verificationToken: 'sentinel-verify=test',
+        createdAt: '2026-06-15T01:00:00.000Z',
+      }),
+      getRecentScans: async () => [],
+      internalApiKey: 'test-internal-key',
+    });
+
+    const response = await app.inject({
+      headers: {
+        'content-type': 'application/json',
+        'x-sentinel-internal-key': 'test-internal-key',
+        'x-sentinel-user-email': 'owner@example.com',
+      },
+      method: 'POST',
+      payload: {
+        hostname: 'https://example.com/path',
+      },
+      url: '/internal/domains',
+    });
+
+    assert.equal(response.statusCode, 201);
+    assert.deepEqual(response.json(), {
+      domain: {
+        id: 'domain_1',
+        hostname: 'https://example.com/path:owner@example.com',
+        verified: false,
+        verificationMethod: 'dns-txt',
+        verificationToken: 'sentinel-verify=test',
+        createdAt: '2026-06-15T01:00:00.000Z',
+      },
+    });
+  });
 });

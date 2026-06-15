@@ -66,9 +66,45 @@ test('private scan history proxy requires a Sentinel session and internal API ke
   assert.match(source, /x-sentinel-internal-key/);
 });
 
+test('private domains proxy requires a Sentinel session and forwards user context', () => {
+  assert.equal(exists('./api/app/domains/route.ts'), true);
+
+  const source = read('./api/app/domains/route.ts');
+
+  assert.match(source, /requireCurrentUser/);
+  assert.match(source, /SENTINEL_INTERNAL_API_KEY/);
+  assert.match(source, /x-sentinel-user-email/);
+  assert.match(source, /\/internal\/domains/);
+});
+
+test('private projects proxy requires a Sentinel session and forwards user context', () => {
+  assert.equal(exists('./api/app/projects/route.ts'), true);
+
+  const source = read('./api/app/projects/route.ts');
+
+  assert.match(source, /requireCurrentUser/);
+  assert.match(source, /SENTINEL_INTERNAL_API_KEY/);
+  assert.match(source, /x-sentinel-user-email/);
+  assert.match(source, /\/internal\/projects/);
+});
+
 test('private scans view renders authenticated persisted scan history', () => {
   const shell = read('../components/professional-app-shell.tsx');
 
   assert.match(shell, /PrivateScanHistory/);
   assert.doesNotMatch(shell, /const scans = \[/);
+});
+
+test('private domains view renders authenticated persisted domains', () => {
+  const shell = read('../components/professional-app-shell.tsx');
+
+  assert.match(shell, /PrivateDomains/);
+  assert.doesNotMatch(shell, /const domains = \[/);
+});
+
+test('private projects view renders authenticated persisted projects', () => {
+  const shell = read('../components/professional-app-shell.tsx');
+
+  assert.match(shell, /PrivateProjects/);
+  assert.doesNotMatch(shell, /const projects = \[/);
 });

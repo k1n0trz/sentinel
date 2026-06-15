@@ -2087,6 +2087,28 @@ h3 {
   padding: 16px 18px;
 }
 
+.app-inline-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding: 16px 18px;
+}
+
+.app-inline-form input {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  padding: 10px 12px;
+}
+
+.app-panel-state {
+  margin: 0;
+  padding: 16px 18px;
+}
+
 .app-alert-line,
 .app-timeline-item {
   display: flex;
